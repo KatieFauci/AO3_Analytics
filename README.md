@@ -6,12 +6,12 @@ to run against history page `python ao3_scrape.py`
 
 ## TODO
 - Handle specific errors when getting works
-  [] hidden works
-  [] deleted works
-[] Create a UI
+  - [ ] hidden works
+  - [ ] deleted works
+- [ ] Create a UI
 - Analyze tags to get
-  [] get top 10 trope taga
-  [] get top 10 relashionship tags
-[] Sisplay analytics in charts
-[] parse data into CSV/database for quick recall of information
-[] pull the number of times visiting a story into data 
+  - [ ] get top 10 trope taga
+  - [ ] get top 10 relashionship tags
+- [ ] Sisplay analytics in charts
+- [ ] parse data into CSV/database for quick recall of information
+- [ ] pull the number of times visiting a story into data 
