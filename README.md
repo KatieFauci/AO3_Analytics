@@ -1,8 +1,11 @@
 # AO3_Analytics
 Analyze AO3 User Data
 
+to start the virtual enviorment run `.\env\Scripts\activate.bat `
+
 to run against history page `python ao3_scrape.py`
 - For testing only scrapes the first 10 pages and displays limited info
+
 
 ## TODO
 - Handle specific errors when getting works
