@@ -125,8 +125,6 @@ def call_history():
             return pages
 
 def call_history_v2(USERNAME, PASSWORD):
-
-
     pages = []
     history_url = f'https://archiveofourown.org/users/{USERNAME}/readings'
     login_url = 'https://archiveofourown.org/users/login'
@@ -138,11 +136,17 @@ def call_history_v2(USERNAME, PASSWORD):
     authenticity_token = soup.find('input', {'name': 'authenticity_token'})['value']
 
     # Log in to AO3
-    sess.post('https://archiveofourown.org/users/login', params={
+    login_request = sess.post(login_url, params={
         'authenticity_token': authenticity_token,
         'user[login]': USERNAME,
         'user[password]': PASSWORD,
     })
+
+    # Check if login Successful
+    if ("The password or user name you entered doesn't match our records" in login_request.text):
+        print('INVALID LOGIN')
+        return 0
+    
 
     # Fetch my private reading history
     first_request = sess.get(history_url)
@@ -157,7 +161,7 @@ def call_history_v2(USERNAME, PASSWORD):
             print('URL: ' + this_url)
             pages.append(sess.get(this_url))
             page_num += 1
-            if page_num == 11:
+            if page_num == 6:
                 print('BREAK' + page_num)
         except:
             print('IN EXCEPT')
