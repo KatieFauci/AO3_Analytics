@@ -20,10 +20,10 @@ eel.say_hello_js('Python this World!')   # Call a Javascript function
 @eel.expose
 def get_history_clicked(un, pwd):
     print('HERE\n')
-    #eel.printToOutput('Scrape Started')
+    eel.printToOutput('SCRAPE STARTED')
     ao3_scrape.scrape(un, pwd)
-    #eel.printToOutput('Scrape Done')
+    eel.printToOutput('SCRAPE DONE')
 
 print('Calling Javascript...')
-eel.start('hello.html', size=(500, 700)) 
+eel.start('hello.html', size=(700, 700)) 
  # Start

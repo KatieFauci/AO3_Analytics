@@ -13,7 +13,7 @@ to run against history page `python ao3_scrape.py`
   - [ ] deleted works
 - Create a UI
   - [X] Base UI
-  - [ ] Print CMD line output
+  - [X] Print CMD line output
   - [ ] Create Result Tabs
   - [ ] display results in Tabs
 - Analyze tags to get
