@@ -1,0 +1,16 @@
+.output-box
+{
+    height: 300px;
+    width: 400px;
+    overflow: auto;
+    float: center;
+    position: relative;
+    margin-left: 10px;
+    padding: 10px;
+    outline: auto;
+}
+
+.top-title
+{
+    color: red;
+}

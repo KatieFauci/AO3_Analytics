@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <title>Hello, World!</title>
+        <h1 class="top-title">AO3 History Tool</h1>
+        
+        <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
+        <script type="text/javascript" src="/eel.js"></script>
+        <script src="main.js"></script>
+        <script type="text/javascript">
+        
+          eel.expose(say_hello_js);               // Expose this function to Python
+          function say_hello_js(x) {
+              console.log("Hello here from " + x);
+          }
+          
+          say_hello_js("Javascript World!");
+          eel.say_hello_py("Javascript World!!!");  // Call a Python function
+          
+          function clickHistoryButton() { 
+                            
+              var doc = document.getElementById("get-history-btn");
+
+              // get the username and password from the fields
+              var user_field = document.getElementById("un").value
+              var pass_field = document.getElementById("pwd").value;
+
+              console.log(user_field)
+              console.log(pass_field)
+                
+              // Changing the text content
+              doc.textContent = "Getting History...";
+
+              //run scrape
+              eel.get_history_clicked(user_field, pass_field);
+          }
+        </script>
+    </head>
+    
+    <body>
+        <div>
+          <form>
+            <label for="username">Username:</label><br>
+            <input type="text" id="un" name="un"><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="pwd" name="pwd">
+          </form>
+          <br>
+          <button type = "button" id="get-history-btn" onclick="clickHistoryButton()">Get History</button>
+        </div>
+        <br>
+        <div class = "output-box">
+          START TEXT
+        </div>
+    </body>
+</html>
