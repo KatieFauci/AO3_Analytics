@@ -1,5 +1,8 @@
 eel.expose(printToOutput);
 function printToOutput(output) {
     console.log("IN JAVASCRIPT PRINT FUNCTION");
-    document.getElementById("output-box").value = document.getElementById("output-box").value + "\n" + output;
+    ele = document.getElementById("output-box");
+    console.log(ele.innerHTML);
+    ele.innerHTML = ele.innerHTML + "<br>" + output;
+    ele.scrollTop = ele.scrollHeight;
 }

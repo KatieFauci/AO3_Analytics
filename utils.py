@@ -6,20 +6,21 @@ from math import floor
 import requests
 import time
 from bs4 import BeautifulSoup as bs
+import eel
 
 
 def print_work_data(work):
-    print('TITLE: ' + work.title)
-    print('AUTHOR: ' + work.author)
-    print('WORDS: ' + str(work.word_count))
-    print('LAST VISITED: ' + str(work.last_visited))
-    print('TAGS: ' + str(work.tags))
-    print('\n-------------------\n')
+    print_out('TITLE: ' + work.title)
+    print_out('AUTHOR: ' + work.author)
+    print_out('WORDS: ' + str(work.word_count))
+    print_out('LAST VISITED: ' + str(work.last_visited))
+    print_out('TAGS: ' + str(work.tags))
+    print_out('\n-------------------\n')
 
 def print_user_data(user):
-    print('\nTotal Works Read: ' + str(user.story_count))
-    print('Total Words Read: ' + str(user.total_words))
-    print('Total Pages Read: ' + str(user.page_count))
+    print_out('\nTotal Works Read: ' + str(user.story_count))
+    print_out('Total Words Read: ' + str(user.total_words))
+    print_out('Total Pages Read: ' + str(user.page_count))
     #for key in user.tag_stats:
     #    print(key + ': ' + str(user.tag_stats.get(key)))
 
@@ -98,7 +99,7 @@ def call_history():
     }
 
     url = 'https://archiveofourown.org/users/WrongfulRuffian/readings'
-    print('GETTING PAGE >> 1')
+    print_out('GETTING PAGE >> 1')
     first_request = requests.get(url, cookies=cookies, headers=headers)
 
     pages.append(first_request)
@@ -107,21 +108,21 @@ def call_history():
     # https://archiveofourown.org/users/WrongfulRuffian/readings?page=2
 
     page_num = 2
-    print('PAGE NUM SET TO ' + str(page_num))
+    print_out('PAGE NUM SET TO ' + str(page_num))
     while True:
-        print('IN WHILE')
+        print_out('IN WHILE')
         try:
-            print('IN TRY')
+            print_out('IN TRY')
             time.sleep(1)
-            print('GETTING PAGE >> ' + str(page_num))
+            print_out('GETTING PAGE >> ' + str(page_num))
             this_url = url + '?page=' + str(page_num)
-            print('URL: ' + this_url)
+            print_out('URL: ' + this_url)
             pages.append(requests.get(this_url, cookies=cookies, headers=headers))
             page_num += 1
             if page_num == 11:
-                print('BREAK' + page_num)
+                print_out('BREAK' + page_num)
         except:
-            print('IN EXCEPT')
+            print_out('IN EXCEPT')
             return pages
 
 def call_history_v2(USERNAME, PASSWORD):
@@ -144,7 +145,7 @@ def call_history_v2(USERNAME, PASSWORD):
 
     # Check if login Successful
     if ("The password or user name you entered doesn't match our records" in login_request.text):
-        print('INVALID LOGIN')
+        print_out('INVALID LOGIN')
         return 0
     
 
@@ -156,13 +157,17 @@ def call_history_v2(USERNAME, PASSWORD):
     while True:
         try:
             time.sleep(1)
-            print('GETTING PAGE >> ' + str(page_num))
+            print_out('GETTING PAGE >> ' + str(page_num))
             this_url = history_url + '?page=' + str(page_num)
-            print('URL: ' + this_url)
+            print_out('URL: ' + this_url)
             pages.append(sess.get(this_url))
             page_num += 1
             if page_num == 6:
-                print('BREAK' + page_num)
+                print_out('BREAK' + page_num)
         except:
-            print('IN EXCEPT')
+            print_out('IN EXCEPT')
             return pages
+
+def print_out(out):
+    print(out)
+    eel.printToOutput(out)

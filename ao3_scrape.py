@@ -1,5 +1,6 @@
 import bs4
 import utils
+import eel
 
 class UserData:
     def __init__(self):
@@ -20,13 +21,17 @@ class Work:
 
 
 def scrape(USERNAME, PASSWORD):
-    #USERNAME = "WrongfulRuffian"
-    #PASSWORD = "Szi646Feis!5SWH"
+    USERNAME = "WrongfulRuffian"
+    PASSWORD = "Szi646Feis!5SWH"
+
+    eel.printToOutput("USERNAME: " + USERNAME)
+    eel.printToOutput("PASSWORD: " + PASSWORD)
     page_num = 1
     this_user = UserData()
     response_pages = utils.call_history_v2(USERNAME, PASSWORD)
 
     if (response_pages == 0):
+        eel.printToOutput("UNABLE TO GET HISTORY DUE TO INVALID LOGIN")
         print("UNABLE TO GET HISTORY DUE TO INVALID LOGIN")
     else:
         print(response_pages)
@@ -34,6 +39,7 @@ def scrape(USERNAME, PASSWORD):
         for page in response_pages:
             soup = bs4.BeautifulSoup(page.text, 'html.parser')
             
+            eel.printToOutput('PARSING PAGE >> ' + str(page_num))
             print('PARSING PAGE >> ' + str(page_num))
 
             for work in soup.find_all('li', attrs={"role": "article"}):
@@ -67,6 +73,7 @@ def scrape(USERNAME, PASSWORD):
                     # Inc Story Count
                     this_user.story_count = this_user.story_count + 1
                 except:
+                    eel.printToOutput('PARSING PAGE >> ' + str(page_num))
                     print(f'ERROR getting work on page {page_num}')
 
             page_num = page_num + 1
