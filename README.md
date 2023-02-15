@@ -8,19 +8,19 @@ to run against history page `python ao3_scrape.py`
 
 
 ## TODO
+- [ ] Integrate a Database (no sql) 
 - Handle specific errors when getting works
   - [ ] hidden works
   - [ ] deleted works
 - Create a UI
   - [X] Base UI
   - [X] Print CMD line output
-  - [ ] Create Result Tabs
+  - [X] Create Result Tabs
   - [ ] display results in Tabs
 - Analyze tags to get
   - [ ] get top 10 trope taga
   - [ ] get top 10 relashionship tags
 - [ ] Display analytics in charts
-- [ ] parse data into CSV/database for quick recall of information
 - [ ] pull the number of times visiting a story into data 
 - [X] Handle bad login
 - [ ] Get Rating

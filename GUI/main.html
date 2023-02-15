@@ -8,8 +8,7 @@
         <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
         <script type="text/javascript" src="/eel.js"></script>
         <script src="/main.js"></script>
-        <script type="text/javascript">
-        
+        <script type="text/javascript">        
           eel.expose(say_hello_js);               // Expose this function to Python
           function say_hello_js(x) {
               console.log("Hello here from " + x);
@@ -38,7 +37,16 @@
         </script>
     </head>
     
-    <body>
+    <body onload="defaultTab()">
+      <!-- Tab links -->
+      <div class="tab">
+        <button class="tablinks" onclick="openTab(event,'Scrape')" id="defaultOpen">Scrape</button>
+        <button class="tablinks" onclick="openTab(event, 'Tags')">Tags</button>
+        <button class="tablinks" onclick="openTab(event, 'Ships')">Ships</button>
+      </div>
+
+      <!-- Tab content -->
+      <div id="Scrape" class="tabcontent">
         <div>
           <form>
             <label for="username">Username:</label><br>
@@ -52,5 +60,14 @@
         <br>
         <div id = "output-box">
         </div>
+      </div>
+
+      <div id="Tags" class="tabcontent">
+        Tags Tab
+      </div>
+
+      <div id="Ships" class="tabcontent">
+        Ships Tab
+      </div>
     </body>
 </html>

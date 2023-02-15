@@ -12,9 +12,6 @@ def say_hello_py(x):
 def button_press():
     print('HISTORY BUTTON PRESSED')
 
-say_hello_py('Python World!')
-eel.say_hello_js('Python this World!')   # Call a Javascript function
-
 
 # Get user history
 @eel.expose
@@ -25,5 +22,5 @@ def get_history_clicked(un, pwd):
     eel.printToOutput('SCRAPE DONE')
 
 print('Calling Javascript...')
-eel.start('hello.html', size=(700, 700)) 
+eel.start('main.html', size=(700, 700)) 
  # Start
