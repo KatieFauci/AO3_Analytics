@@ -44,7 +44,12 @@ def get_work_tags(entry):
         #tag_info = [tag['class'].pop()]
         #tag_info.append(tag.a.get_text())
         if tag_info[0] != 'Show warnings':
-            parsed_tags.append(tag_info)
+            dict_tag = {
+                "tag": tag_info[0],
+                "tagclass": tag_info[1],
+            }
+            parsed_tags.append(dict_tag)
+    print(parsed_tags)
     return parsed_tags
     #print(entry.find('ul', class_='tags commas').find_all('li'))
 

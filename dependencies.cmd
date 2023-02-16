@@ -4,6 +4,7 @@ pip install datetime
 pip install math
 pip install requests
 pip install time
+pip install json
 
 # install dependencies for the UI
 pip install eel[jinja2]
