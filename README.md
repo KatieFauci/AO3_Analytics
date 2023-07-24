@@ -8,10 +8,10 @@ to run against history page `python ao3_scrape.py`
 
 
 ## TODO
-- [ ] Integrate a Database (no sql) 
+- [X] Integrate a Database (no sql) - JSON Files
 - Handle specific errors when getting works
-  - [ ] hidden works
-  - [ ] deleted works
+  - [X] hidden works
+  - [X] deleted works
 - Create a UI
   - [X] Base UI
   - [X] Print CMD line output

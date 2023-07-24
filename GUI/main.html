@@ -62,8 +62,21 @@
         </div>
       </div>
 
-      <div id="Tags" class="tabcontent">
-        Tags Tab
+      <div id="Tags" class="tabcontent" onload="defaultTab()">
+        <!-- Tag Tab Links -->
+        <div class="tab">
+          <button class="tablinks" onclick="openTagTab(event,'Characters')" id="defaultTagTab">Characters</button>
+          <button class="tablinks" onclick="openTagTab(event, 'Freeform')">Freeform</button>
+        </div>
+
+        <!-- Tag Tab content -->
+        <div id="Characters" class="tabcontent">
+          <button>All Characters</button>
+          <button>Top 10 Characters</button>
+        </div>
+        <div id="Freeform" class="tabcontent">
+          This is the Freeform tab
+        </div>
       </div>
 
       <div id="Ships" class="tabcontent">

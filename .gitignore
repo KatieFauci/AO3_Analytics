@@ -3,3 +3,5 @@ pyvenv.cfg
 __pycache__/
 Scripts
 Lib
+/Scrape_Results
+all_works.json

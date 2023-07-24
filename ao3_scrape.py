@@ -1,6 +1,8 @@
 import bs4
 import utils
 import eel
+import tinydb
+import json
 
 class UserData:
     def __init__(self):
@@ -21,6 +23,7 @@ class Work:
 
 
 def scrape(USERNAME, PASSWORD):
+
     USERNAME = "WrongfulRuffian"
     PASSWORD = "Szi646Feis!5SWH"
 
@@ -29,21 +32,29 @@ def scrape(USERNAME, PASSWORD):
     page_num = 1
     this_user = UserData()
     response_pages = utils.call_history_v2(USERNAME, PASSWORD)
+    dict_collection = []
 
     if (response_pages == 0):
         eel.printToOutput("UNABLE TO GET HISTORY DUE TO INVALID LOGIN")
         print("UNABLE TO GET HISTORY DUE TO INVALID LOGIN")
+        
     else:
         print(response_pages)
 
         for page in response_pages:
+            if ("Sorry, you don't have permission to access the page you were trying to reach. Please log in." in page.text):
+                print('Incorrect Page')
+            
             soup = bs4.BeautifulSoup(page.text, 'html.parser')
+
+            if ("Sorry, you don't have permission to access the page you were trying to reach. Please log in." in soup):
+                print('Incorrect Page')
+                break
             
             eel.printToOutput('PARSING PAGE >> ' + str(page_num))
-            print('PARSING PAGE >> ' + str(page_num))
+            #print('PARSING PAGE >> ' + str(page_num))
 
             for work in soup.find_all('li', attrs={"role": "article"}):
-
                 try:
                     this_work = Work()
 
@@ -72,17 +83,33 @@ def scrape(USERNAME, PASSWORD):
 
                     # Inc Story Count
                     this_user.story_count = this_user.story_count + 1
-                except:
-                    eel.printToOutput('PARSING PAGE >> ' + str(page_num))
-                    print(f'ERROR getting work on page {page_num}')
 
+                    # Store info as JSON
+                    dictionary = {
+                        "title": this_work.title,
+                        "author": this_work.author,
+                        "wordcount": this_work.word_count, 
+                        "lastvisited": str(this_work.last_visited), 
+                        "tags": this_work.tags    
+                    }
+                    dict_collection.append(dictionary)
+
+                except:
+                    eel.printToOutput(f'ERROR getting work on page {page_num}')
             page_num = page_num + 1
 
         # Get User Stats
-        this_user.tag_stats = utils.compile_user_tags(this_user)
+        ##this_user.tag_stats = utils.compile_user_tags(this_user)
         this_user.page_count = utils.get_page_count(this_user.total_words);
 
         utils.print_user_data(this_user)
+
+        json_object = json.dumps(dict_collection, indent=4)
+
+        with open("Scrape_Results/all_works.json", "w") as outfile:
+            outfile.write(json_object)
+
+        utils.get_all_tags_from_json()
 
     print("END")
 

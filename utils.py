@@ -7,6 +7,7 @@ import requests
 import time
 from bs4 import BeautifulSoup as bs
 import eel
+import json
 
 
 def print_work_data(work):
@@ -44,7 +45,12 @@ def get_work_tags(entry):
         #tag_info = [tag['class'].pop()]
         #tag_info.append(tag.a.get_text())
         if tag_info[0] != 'Show warnings':
-            parsed_tags.append(tag_info)
+            dict_tag = {
+                "tag": tag_info[0],
+                "tagclass": tag_info[1],
+            }
+            parsed_tags.append(dict_tag)
+    print(parsed_tags)
     return parsed_tags
     #print(entry.find('ul', class_='tags commas').find_all('li'))
 
@@ -122,7 +128,7 @@ def call_history():
             if page_num == 11:
                 print_out('BREAK' + page_num)
         except:
-            print_out('IN EXCEPT')
+            print_out('IN EXCEPT 2')
             return pages
 
 def call_history_v2(USERNAME, PASSWORD):
@@ -132,10 +138,12 @@ def call_history_v2(USERNAME, PASSWORD):
 
     sess = requests.Session()
 
-    req = sess.get('https://archiveofourown.org')
+    req = sess.get(login_url)
     soup = bs(req.text, features='html.parser')
     authenticity_token = soup.find('input', {'name': 'authenticity_token'})['value']
-
+    
+    print (authenticity_token)
+    
     # Log in to AO3
     login_request = sess.post(login_url, params={
         'authenticity_token': authenticity_token,
@@ -143,10 +151,20 @@ def call_history_v2(USERNAME, PASSWORD):
         'user[password]': PASSWORD,
     })
 
+    print (login_request)
+
     # Check if login Successful
     if ("The password or user name you entered doesn't match our records" in login_request.text):
-        print_out('INVALID LOGIN')
+        print_out('LOGIN ERROR: INVALID CRIDENTIALS')
         return 0
+    elif ("Sorry, you don't have permission to access the page you were trying to reach. Please log in." in login_request.text):
+        print_out('LOGIN ERROR: PERMISSION DENIED')
+        return 0
+    elif ("Your current session has expired and we can't authenticate your request" in login_request.text):
+        print_out('LOGIN ERROR: AUTHENTICATION ERROR')
+        return 0
+    
+    print(login_request.text)
     
 
     # Fetch my private reading history
@@ -165,8 +183,73 @@ def call_history_v2(USERNAME, PASSWORD):
             if page_num == 6:
                 print_out('BREAK' + page_num)
         except:
-            print_out('IN EXCEPT')
+            print_out('IN EXCEPT 1')
+            print(pages)
             return pages
+
+
+# --------------------------------------------------------
+#  JSON UTILS
+# --------------------------------------------------------
+def get_tag_stats_from_json(start_date = 0, end_date = datetime.now):
+    
+    f = open('Scrape_Results./all_works.json')
+    works = json.load(f)
+
+    tag_stats = [];
+
+    # Get subset of works based on date if not getting whole history
+    if start_date != 0:
+        #get all history
+        # Open json file
+        print('Getting history subset')
+        # Iterate through the tags
+    
+    for work in works:
+        for tag in work['tags']:
+
+            if any(this_tag['tag'] == tag['tag'] for this_tag in tag_stats):
+                for t in tag_stats:
+                    if t['tag'] == tag['tag']:
+                        t['count'] = int(t.get('count')) + 1
+            else: 
+                this_tag = {
+                    'tag': tag['tag'],
+                    'class': tag['tagclass'],
+                    'count': 1,
+                }
+                tag_stats.append(this_tag)
+                
+    json_object = json.dumps(tag_stats, indent=4)
+
+    with open("Scrape_Results/user_tag_stats.json", "w") as outfile:
+        outfile.write(json_object)
+
+
+def get_top_ten_tags():
+    f = open('Scrape_Results./user_tag_stats.json')
+    tags = json.load(f)
+
+    #Sort tags
+    tags_by_count = sorted(tags, key=lambda d: d['count'], reverse=True)
+    relationships_tags = []
+    characters_tags = []
+    freeforms_tags = []
+    # Sort tags by class
+    for tag in tags_by_count:
+        if tag['class'] == 'relationships':
+            relationships_tags.append(tag)
+        if tag['class'] == 'characters':
+            characters_tags.append(tag)
+        if tag['class'] == 'freeforms':
+            freeforms_tags.append(tag)
+        
+    #Print first 10 tags
+    i = 0
+    while i < 10:
+        print(freeforms_tags[i])
+        i+=1
+
 
 def print_out(out):
     print(out)
