@@ -37,17 +37,24 @@ def scrape(USERNAME, PASSWORD):
     if (response_pages == 0):
         eel.printToOutput("UNABLE TO GET HISTORY DUE TO INVALID LOGIN")
         print("UNABLE TO GET HISTORY DUE TO INVALID LOGIN")
+        
     else:
         print(response_pages)
 
         for page in response_pages:
+            if ("Sorry, you don't have permission to access the page you were trying to reach. Please log in." in page.text):
+                print('Incorrect Page')
+            
             soup = bs4.BeautifulSoup(page.text, 'html.parser')
+
+            if ("Sorry, you don't have permission to access the page you were trying to reach. Please log in." in soup):
+                print('Incorrect Page')
+                break
             
             eel.printToOutput('PARSING PAGE >> ' + str(page_num))
             #print('PARSING PAGE >> ' + str(page_num))
 
             for work in soup.find_all('li', attrs={"role": "article"}):
-
                 try:
                     this_work = Work()
 
@@ -85,12 +92,10 @@ def scrape(USERNAME, PASSWORD):
                         "lastvisited": str(this_work.last_visited), 
                         "tags": this_work.tags    
                     }
-                    print(dictionary)
                     dict_collection.append(dictionary)
 
-                except():
+                except:
                     eel.printToOutput(f'ERROR getting work on page {page_num}')
-                    print(e)
             page_num = page_num + 1
 
         # Get User Stats
@@ -103,6 +108,8 @@ def scrape(USERNAME, PASSWORD):
 
         with open("Scrape_Results/all_works.json", "w") as outfile:
             outfile.write(json_object)
+
+        utils.get_all_tags_from_json()
 
     print("END")
 
