@@ -25,6 +25,18 @@ def print_user_data(user):
     #for key in user.tag_stats:
     #    print(key + ': ' + str(user.tag_stats.get(key)))
 
+def store_user_data(user):
+    dictionary = {
+        "WorksRead": user.story_count,
+        "WordsRead": user.total_words,
+        "PagesRead": user.page_count, 
+    }
+
+    json_object = json.dumps(dictionary, indent=4)
+
+    with open("Scrape_Results/user_data.json", "w") as outfile:
+        outfile.write(json_object)
+
 def get_title(work):
      temp = work.find_all('div', class_='header module')[0].find_all('h4')[0].find_all('a')
      return temp[0].get_text()

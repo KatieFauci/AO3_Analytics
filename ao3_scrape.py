@@ -39,8 +39,6 @@ def scrape(USERNAME, PASSWORD):
         print("UNABLE TO GET HISTORY DUE TO INVALID LOGIN")
         
     else:
-        print(response_pages)
-
         for page in response_pages:
             if ("Sorry, you don't have permission to access the page you were trying to reach. Please log in." in page.text):
                 print('Incorrect Page')
@@ -103,13 +101,14 @@ def scrape(USERNAME, PASSWORD):
         this_user.page_count = utils.get_page_count(this_user.total_words);
 
         utils.print_user_data(this_user)
+        utils.store_user_data(this_user)
 
         json_object = json.dumps(dict_collection, indent=4)
 
         with open("Scrape_Results/all_works.json", "w") as outfile:
             outfile.write(json_object)
 
-        utils.get_all_tags_from_json()
+        #utils.get_all_tags_from_json()
 
     print("END")
 
