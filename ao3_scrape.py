@@ -16,6 +16,7 @@ class Work:
     def __init__(self):
         self.title = ''
         self.author = ''
+        self.rating = ''
         self.word_count = 0
         self.tags = []
         self.last_visited = ''
@@ -63,6 +64,7 @@ def scrape(USERNAME, PASSWORD):
                     this_work.author = utils.get_author(work)
 
                     # TODO: Get Rating
+                    this_work.rating = utils.get_rating(work)
 
                     # Get Work Word Count
                     this_work.word_count = utils.get_work_word_count(work)
@@ -84,11 +86,12 @@ def scrape(USERNAME, PASSWORD):
 
                     # Store info as JSON
                     dictionary = {
-                        "title": this_work.title,
-                        "author": this_work.author,
-                        "wordcount": this_work.word_count, 
-                        "lastvisited": str(this_work.last_visited), 
-                        "tags": this_work.tags    
+                        "Title": this_work.title,
+                        "Author": this_work.author,
+                        "Rating": this_work.rating,
+                        "WordCount": this_work.word_count, 
+                        "LastVisited": str(this_work.last_visited), 
+                        "Tags": this_work.tags    
                     }
                     dict_collection.append(dictionary)
 
@@ -108,9 +111,10 @@ def scrape(USERNAME, PASSWORD):
         with open("Scrape_Results/all_works.json", "w") as outfile:
             outfile.write(json_object)
 
-        #utils.get_all_tags_from_json()
+        utils.get_tag_stats_from_json()
 
     print("END")
+
 
 
 

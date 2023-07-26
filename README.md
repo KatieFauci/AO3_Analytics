@@ -23,4 +23,4 @@ to run against history page `python ao3_scrape.py`
 - [ ] Display analytics in charts
 - [ ] pull the number of times visiting a story into data 
 - [X] Handle bad login
-- [ ] Get Rating
+- [X] Get Rating
