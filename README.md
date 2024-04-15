@@ -16,11 +16,12 @@ to run against history page `python ao3_scrape.py`
   - [X] Base UI
   - [X] Print CMD line output
   - [X] Create Result Tabs
-  - [ ] display results in Tabs
+  - [X] display results in Tabs
 - Analyze tags to get
   - [ ] get top 10 trope tag
   - [ ] get top 10 relashionship tags
 - [ ] Display analytics in charts
 - [ ] pull the number of times visiting a story into data 
+- [ ] Pull if part of collection or series/multiple series
 - [X] Handle bad login
 - [X] Get Rating
