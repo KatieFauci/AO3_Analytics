@@ -15,44 +15,25 @@ function defaultTagTab(){
   document.getElementById("Tags").getElementById("defaultTagTab").click();
 }
 
-function openTab(evt, tabName) {
-    // Declare all variables
-    var i, tabcontent, tablinks;
-  
-    // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].style.display = "none";
-    }
-  
-    // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-  
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-}
-
-function openTagTab(evt, tabName) {
-  // Declare all variables
+function openTab(evt, tabName, parentTabId) {
+  console.log("openTab called with tabName:", tabName, "and parentTabId:", parentTabId);  
   var i, tabcontent, tablinks;
 
-  // Get all elements with class="tabcontent" and hide them
-  tabcontent = document.getElementById("Tags").getElementsByClassName("tabcontent");
+  // Get all tab content elements within the parent tab
+  tabcontent = document.getElementById(parentTabId).querySelectorAll(".tabcontent");
   for (i = 0; i < tabcontent.length; i++) {
     tabcontent[i].style.display = "none";
   }
 
-  // Get all elements with class="tablinks" and remove the class "active"
-  tablinks = document.getElementById("Tags").getElementById("tab").getElementsByClassName("tablinks");
+  // Get all tab link elements within the parent tab
+  tablinks = document.getElementById(parentTabId).getElementsByClassName("tablinks");
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(" active", "");
   }
 
-  // Show the current tab, and add an "active" class to the button that opened the tab
-  document.getElementById("Tags").getElementById(tabName).style.display = "block";
+  // Show the current tab
+  document.getElementById(tabName).style.display = "block";
+
+  // Add "active" class to the clicked button
   evt.currentTarget.className += " active";
 }
