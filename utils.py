@@ -181,6 +181,7 @@ def call_history_v2(USERNAME, PASSWORD):
         return 0 
 
     # Fetch my private reading history
+    print_out('GETTING PAGE >> 1')
     first_request = sess.get(history_url)
     pages.append(first_request)
     
@@ -193,7 +194,7 @@ def call_history_v2(USERNAME, PASSWORD):
             print_out('URL: ' + this_url)
             pages.append(sess.get(this_url))
             page_num += 1
-            if page_num == 6:
+            if page_num == 3:
                 print_out('BREAK' + page_num)
         except:
             print_out('DONE FETCHING PAGES')
@@ -262,6 +263,47 @@ def get_top_ten_tags():
         print(freeforms_tags[i])
         i+=1
 
+def get_characters():
+        f = open('Scrape_Results./user_tag_stats.json')
+        tags = json.load(f)
+
+        # Filter for "character" tags
+        character_tags = [item["Tag"] for item in data if item["Class"] == "characters"]
+
+        # Create HTML list
+        html = "<ul>\n"
+        for tag in character_tags:
+            html += f"  <li>{tag}</li>\n"
+        html += "</ul>"
+
+        return(html)
+############################################
+## BUILD HTML FORMAT
+############################################
+def build_stats_table():
+    with open('Scrape_Results/user_data.json', "r") as f:
+        data = json.load(f)
+        html_table = """
+        <style>
+            table td:first-child {
+            background-color: lightblue; /* Adjust color as needed */
+            }
+        </style>
+        <table>
+        <tbody>
+        """
+
+        for key, value in data.items():
+            html_table += f"        <tr>\n          <td><strong>{key}</strong></td>\n          <td>{value}</td>\n        </tr>\n"
+
+        html_table += """
+        </tbody>
+        </table>
+        """
+    return html_table
+############################################
+## OTHER
+############################################
 
 def print_out(out):
     print(out)

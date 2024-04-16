@@ -3,6 +3,7 @@ import utils
 import eel
 import tinydb
 import json
+import DB_Access
 
 class UserData:
     def __init__(self):
@@ -34,6 +35,8 @@ def scrape(USERNAME, PASSWORD):
     this_user = UserData()
     response_pages = utils.call_history_v2(USERNAME, PASSWORD)
     dict_collection = []
+
+    DB_Access.create_database()
 
     if (response_pages == 0):
         eel.printToOutput("UNABLE TO GET HISTORY DUE TO INVALID LOGIN")
@@ -95,8 +98,10 @@ def scrape(USERNAME, PASSWORD):
                     }
                     dict_collection.append(dictionary)
 
-                except:
-                    eel.printToOutput(f'ERROR getting work on page {page_num}')
+                    DB_Access.insert_work_into_database(this_work)
+
+                except Exception as e:
+                    eel.printToOutput(f'ERROR getting work on page {page_num} >>>> ERROR: {e}')
             page_num = page_num + 1
 
         # Get User Stats
@@ -110,6 +115,8 @@ def scrape(USERNAME, PASSWORD):
 
         with open("Scrape_Results/all_works.json", "w") as outfile:
             outfile.write(json_object)
+
+        
 
         utils.get_tag_stats_from_json()
 
