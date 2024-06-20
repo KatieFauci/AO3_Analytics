@@ -26,8 +26,8 @@ class Work:
 
 def scrape(USERNAME, PASSWORD):
 
-    USERNAME = "WrongfulRuffian"
-    PASSWORD = "Szi646Feis!5SWH"
+    USERNAME = ""
+    PASSWORD = ""
 
     eel.printToOutput("USERNAME: " + USERNAME)
     eel.printToOutput("PASSWORD: " + PASSWORD)
