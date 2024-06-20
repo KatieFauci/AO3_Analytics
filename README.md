@@ -8,6 +8,7 @@ to run against history page `python ao3_scrape.py`
 
 
 ## TODO
+- [ ] Fix Dependencies file (convert to requirements.txt)
 - [X] Integrate a Database (no sql) - JSON Files
 - Handle specific errors when getting works
   - [X] hidden works
