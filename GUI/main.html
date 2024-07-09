@@ -4,133 +4,88 @@
         <link rel="stylesheet" href="style.css">
         <title>Hello, World!</title>
         <h1 class="top-title">AO3 History Tool</h1>
-        
-        <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
-        <script type="text/javascript" src="/eel.js"></script>
-        <script src="/main.js"></script>
-        <script type="text/javascript">        
-          eel.expose(say_hello_js);               // Expose this function to Python
-          function say_hello_js(x) {
-              console.log("Hello here from " + x);
-          }
-          
-          say_hello_js("Javascript World!");
-          eel.say_hello_py("Javascript World!!!");  // Call a Python function
-          
-          function clickHistoryButton() { 
-                            
-              var doc = document.getElementById("get-history-btn");
 
-              // get the username and password from the fields
-              var user_field = document.getElementById("un").value;
-              var pass_field = document.getElementById("pwd").value;
+    <script type="text/javascript" src="/eel.js"></script>
+    <script src="/script.js"></script>
 
-              console.log(user_field)
-              console.log(pass_field)
-                
-              // Changing the text content
-              doc.textContent = "Getting History...";
+</head>
 
-              //run scrape
-              eel.get_history_clicked(user_field, pass_field);
-          };
+<body id="Main" onload="defaultTab()">
 
-          async function fillUserStats() {
-            // Build Table sring
-            console.log("Stats Clicked");
-            const table = await eel.fill_stats_table()();
-            console.log(table);
-            document.getElementById("stats-table").innerHTML = table;
-          };
+  <!-- Tab links -->
+  <div class="tab">
+    <button class="tablinks" onclick="openTab(event,'Scrape','Main')" id="defaultOpen">Scrape</button>
+    <button class="tablinks" onclick="openTab(event, 'Stats','Main');fillUserStats()">Stats</button>
+    <button class="tablinks" onclick="openTab(event, 'Tags','Main')">Tags</button>
+    <button class="tablinks" onclick="openTab(event, 'Ships','Main')">Ships</button>
+    <button class="tablinks" onclick="openTab(event, 'Recently Visited','Main'); fillRecentlyVisitedTable()">Recently Visited</button>
+  </div>
 
-          async function fillCharacterList() {
-            // Build Table sring
-            console.log("characters Clicked");
-            const table = await eel.fill_character_list()();
-            console.log(table);
-            document.getElementById("user-list").innerHTML = table;
-          };
-        </script>
+  <!-- Tab content -->
+  <div id="Scrape" class="tabcontent">
+    <div>
+      <form>
+        <label for="username">Username:</label><br>
+        <input type="text" id="un" name="un"><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="pwd" name="pwd">
+      </form>
+      <br>
+      <button type="button" id="get-history-btn" onclick="clickHistoryButton()">Get History</button>
+    </div>
+    <br>
+    <div id = "output-box">
+    </div>
+  </div>
 
-    </head>
+  <div id="Stats" class="tabcontent">
+    <button type="button" id="load-stats" onclick="fillUserStats()">Load Stats</button>
+    <button type="button" id="calc-stats">Calculate Stats</button>
+    <table id="stats-table">
+    </table>
+  </div>
+
+  <div id="Tags" class="tabcontent" onload="defaultTab()">
+    <!-- Tag Tab Links -->
+    <div class="tab">
+      <button class="tablinks" onclick="fillTagsTable('tags-table', null); openTab(event,'Top10','Tags', 'defaultTagTab');" id="defaultSubTab" class="active">Top 10 Tags</button>
+      <button class="tablinks" onclick="fillTagsTable('characters-table','characters'); openTab(event,'Characters','Tags');">Characters</button>
+      <button class="tablinks" onclick="fillTagsTable('freeform-table','freeforms'); openTab(event, 'Freeform','Tags');">Freeform</button>
+    </div>
+
+    <!-- Tag Tab content -->
+    <div id="Top10" class="tabcontent">
+      <table id="tags-table">tags table</table>
+    </div>
+    <div id="Characters" class="tabcontent">
+      <table id="characters-table"></table>
+    </div>
+    <div id="Freeform" class="tabcontent">
+      <table id="freeform-table"></table>
+    </div>
+  </div>
+
+  <div id="Ships" class="tabcontent">
     
-    <body id="Main" onload="defaultTab()">
-      <!-- Tab links -->
-      <div class="tab">
-        <button class="tablinks" onclick="openTab(event,'Scrape','Main')" id="defaultOpen">Scrape</button>
-        <button class="tablinks" onclick="openTab(event, 'Stats','Main');fillUserStats()">Stats</button>
-        <button class="tablinks" onclick="openTab(event, 'Tags','Main')">Tags</button>
-        <button class="tablinks" onclick="openTab(event, 'Ships','Main')">Ships</button>
-      </div>
+    <!-- Ship Tab Links -->
+    <div class="tab">
+      <button class="tablinks" onclick="fillShipsTable(); openTab(event,'AllShips','Ships');" id="defaultSubTab">All Ships</button>
+      <button class="tablinks" onclick="openTab(event, 'Top10Ships','Ships')">Top 10 Ships</button>
+    </div>
 
-      <!-- Tab content -->
-      <div id="Scrape" class="tabcontent">
-        <div>
-          <form>
-            <label for="username">Username:</label><br>
-            <input type="text" id="un" name="un"><br>
-            <label for="password">Password:</label><br>
-            <input type="password" id="pwd" name="pwd">
-          </form>
-          <br>
-          <button type="button" id="get-history-btn" onclick="clickHistoryButton()">Get History</button>
-        </div>
-        <br>
-        <div id = "output-box">
-        </div>
-      </div>
-
-      <div id="Stats" class="tabcontent">
-        <button type="button" id="load-stats" onclick="fillUserStats()">Load Stats</button>
-        <button type="button" id="calc-stats">Calculate Stats</button>
-        <table id="stats-table">
-          <tr>
-            <th>Stories Read</th>
-          <tr>
-            <th>Words Read</th>
-          </tr>
-          <tr>
-            <th>Pages Read</th>
-          </tr>
-        </table>
-      </div>
-
-      <div id="Tags" class="tabcontent" onload="defaultTab()">
-        <!-- Tag Tab Links -->
-        <div class="tab">
-          <button class="tablinks" onclick="openTab(event,'Characters','Tags')" id="defaultTagTab">Characters</button>
-          <button class="tablinks" onclick="openTab(event, 'Freeform','Tags')">Freeform</button>
-        </div>
-
-        <!-- Tag Tab content -->
-        <div id="Characters" class="tabcontent">
-          <button onclick="fill_character_list()">All Characters</button>
-          <button>Top 10 Characters</button>
-          <ul id="user-list">
-            <li>list</li>
-          </ul>
-        </div>
-        <div id="Freeform" class="tabcontent">
-          This is the Freeform tab
-        </div>
-      </div>
-
-      <div id="Ships" class="tabcontent">
-        
-        <!-- Tag Tab Links -->
-        <div class="tab">
-          <button class="tablinks" onclick="openTab(event,'AllShips','Ships')" id="defaultTagTab">All Ships</button>
-          <button class="tablinks" onclick="openTab(event, 'Top10Ships','Ships')">Top 10 Ships</button>
-        </div>
-
-        <!-- Tag Tab content -->
-        <div id="AllShips" class="tabcontent">
-          This is the all ships tab
-        </div>
-        <div id="Top10Ships" class="tabcontent">
-          this is the top 10 tab
-        </div>
-        
-      </div>
-    </body>
+    <!-- Ship Tab content -->
+    <div id="AllShips" class="tabcontent">
+      <table id="ship-table"></table>
+    </div>
+    <div id="Top10Ships" class="tabcontent">
+      this is the top 10 tab
+    </div>
+    
+  </div>
+  
+  <!-- Recently Visited Tab -->
+  <div id="Recently Visited" class="tabcontent">
+    <table id="recently-visited-table"></table>
+  </div>
+</body>
 </html>

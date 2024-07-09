@@ -8,6 +8,10 @@ import time
 from bs4 import BeautifulSoup as bs
 import eel
 import json
+import sqlite3
+import metrics
+
+db_name = 'works.db'
 
 
 def print_work_data(work):
@@ -55,6 +59,43 @@ def get_rating(work):
     except:
         return 'Rating Not Found'
     
+def get_language(work):
+    temp = work.find_all('dl', class_='stats')[0].find_all('dt', class_='language')
+    if temp:
+        return temp[0].find_next('dd').get_text()
+    else:
+        return None
+
+def get_chapters(work):
+    temp = work.find_all('dl', class_='stats')[0].find_all('dt', class_='chapters')
+    if temp:
+        chapters = temp[0].find_next('dd').get_text().split('/')
+        return chapters[0].strip(), chapters[1].strip() if chapters[1].strip().isdigit() else None
+    else:
+        return None, None
+    
+def is_completed(work):
+    completed_chapters, total_chapters = get_chapters(work)
+    if completed_chapters and total_chapters:
+        return completed_chapters == total_chapters
+    else:
+        return False
+
+def get_collections(work):
+    temp = work.find_all('dl', class_='stats')[0].find_all('dt', class_='collections')
+    if temp:
+        return temp[0].find_next('dd').get_text()
+    else:
+        return None
+
+def get_fandoms(work):
+    temp = work.find_all('h5', class_='fandoms heading')
+    if temp:
+        fandoms = temp[0].find_all('a', class_='tag')
+        return [fandom.get_text() for fandom in fandoms]
+    else:
+        return None
+    
 
 def get_work_tags(entry):
     tag_list = entry.find('ul', class_='tags commas').find_all('li')
@@ -94,6 +135,50 @@ def last_visited_date(work):
 
 def get_page_count(word_count):
     return floor(word_count/300)
+
+def get_comments(work):
+    temp = work.find_all('dl', class_='stats')[0].find_all('dt', class_='comments')
+    if temp:
+        return temp[0].find_next('dd').get_text()
+    else:
+        return None
+
+def get_kudos(work):
+    temp = work.find_all('dl', class_='stats')[0].find_all('dt', class_='kudos')
+    if temp:
+        return temp[0].find_next('dd').get_text()
+    else:
+        return None
+
+def get_bookmarks(work):
+    temp = work.find_all('dl', class_='stats')[0].find_all('dt', class_='bookmarks')
+    if temp:
+        return temp[0].find_next('dd').get_text()
+    else:
+        return None
+
+def get_hits(work):
+    temp = work.find_all('dl', class_='stats')[0].find_all('dt', class_='hits')
+    if temp:
+        return temp[0].find_next('dd').get_text()
+    else:
+        return None
+
+def get_date_published(work):
+    temp = work.find_all('div', class_='header module')[0].find_all('p', class_='datetime')
+    if temp:
+        return temp[0].get_text()
+    else:
+        return None
+
+
+
+
+
+
+
+
+
 
 def call_history():
     
@@ -277,30 +362,75 @@ def get_characters():
         html += "</ul>"
 
         return(html)
+
+
 ############################################
 ## BUILD HTML FORMAT
 ############################################
 def build_stats_table():
     with open('Scrape_Results/user_data.json', "r") as f:
         data = json.load(f)
-        html_table = """
-        <style>
-            table td:first-child {
-            background-color: lightblue; /* Adjust color as needed */
-            }
-        </style>
-        <table>
-        <tbody>
-        """
+        html_table = """<table><tbody>"""
 
         for key, value in data.items():
-            html_table += f"        <tr>\n          <td><strong>{key}</strong></td>\n          <td>{value}</td>\n        </tr>\n"
+            html_table += f"<tr><td><strong>{key}</strong></td><td>{value}</td></tr>"
 
         html_table += """
         </tbody>
         </table>
         """
     return html_table
+
+
+def build_tags_table(tag_class=None):
+    tags = metrics.top_10_tags(db_name, tag_class)
+    html_table = """
+    <table>
+        <tbody>
+    """
+    count = 1;
+    for tag in tags:
+        html_table += f"<tr><td>{count}</td><td>{tag[0]}</td><td>{tag[1]}</td></tr>"
+        count += 1
+
+    html_table += """</tbody></table>"""
+    return html_table
+
+def build_ship_table(input_list):
+ 
+    html_string = '''<table border="1">{}</table>'''
+    row_format = '''<tr><td>{}</td><td>{}</td><td>{}</td></tr>'''
+    temp_list = []
+    
+    for index, item in enumerate(input_list, start=1):
+        temp_list.append(row_format.format(index, item[0], item[1]))      
+    return html_string.format(''.join(temp_list))
+
+
+
+def build_recently_visited_table(top_5_works):
+    html_table = '''
+    <table border="1">
+       <tr>
+           <th>Title</th>
+           <th>Author</th>
+           <th>Rating</th>
+           <th>Word Count</th>
+       </tr>
+    '''
+    print(top_5_works)
+    for work in top_5_works:
+        html_table += f'''
+        <tr>
+            <td>{work[0]}</td>
+            <td>{work[1]}</td>
+            <td>{work[2]}</td>
+            <td>{work[3]}</td>
+        </tr>
+        '''
+    html_table += "</table>"
+    return html_table
+
 ############################################
 ## OTHER
 ############################################
@@ -308,3 +438,111 @@ def build_stats_table():
 def print_out(out):
     print(out)
     eel.printToOutput(out)
+
+
+
+def get_tag_classes(db_name):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT DISTINCT tag_class FROM tags")
+    tag_classes = [row[0] for row in cursor.fetchall()]
+    
+    conn.close()
+    return tag_classes
+
+
+'''
+Search Database
+'''
+def search_database_a(db_name, keyword, tables=None):
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+
+    if tables is None:
+        tables = ['works', 'authors', 'tags']
+
+    results = {}
+
+    if 'works' in tables:
+        c.execute("SELECT * FROM works WHERE title LIKE ?", ('%' + keyword + '%',))
+        results['works'] = c.fetchall()
+
+    if 'authors' in tables:
+        c.execute("SELECT * FROM authors WHERE author LIKE ?", ('%' + keyword + '%',))
+        results['authors'] = c.fetchall()
+
+    if 'tags' in tables:
+        c.execute("SELECT * FROM tags WHERE tag LIKE ?", ('%' + keyword + '%',))
+        results['tags'] = c.fetchall()
+
+    conn.close()
+
+    return results
+
+
+
+
+def get_works_by_author_a(author_name):
+    conn = sqlite3.connect('works.db')  # replace 'database.db' with your database name
+    c = conn.cursor()
+
+    # Get the author id from the authors table
+    c.execute("SELECT id FROM authors WHERE author=?", (author_name,))
+    author_id = c.fetchone()
+    
+    if author_id:
+        author_id = author_id[0]
+        # Get the works by the author id
+        c.execute("SELECT * FROM works WHERE author_id=?", (author_id,))
+        works = c.fetchall()
+        
+        # For each work, get the associated tags
+        for i in range(len(works)):
+            work_id = works[i][0]
+            c.execute("SELECT tag FROM tags JOIN work_tags ON tags.id=work_tags.tag_id WHERE work_tags.work_id=?", (work_id,))
+            tags = c.fetchall()
+            works[i] += (tags,)
+        
+        return works
+    else:
+        return None
+
+    conn.close()
+
+
+def get_works_by_author_b(author_name):
+    conn = sqlite3.connect('works.db')  # replace 'database.db' with your database name
+    c = conn.cursor()
+
+    # Get the author id from the authors table
+    c.execute("SELECT id FROM authors WHERE author=?", (author_name,))
+    author_id = c.fetchone()
+    
+    if author_id:
+        author_id = author_id[0]
+        # Get the works by the author id
+        c.execute("SELECT * FROM works WHERE author_id=?", (author_id,))
+        works = c.fetchall()
+        
+        # For each work, get the associated tags
+        for i in range(len(works)):
+            work_id = works[i][0]
+            c.execute("SELECT tag FROM tags JOIN work_tags ON tags.id=work_tags.tag_id WHERE work_tags.work_id=?", (work_id,))
+            tags = c.fetchall()
+            works[i] += (tags,)
+        
+        return works
+    else:
+        return None
+
+    conn.close()
+
+
+
+
+
+
+
+
+

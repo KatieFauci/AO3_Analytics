@@ -21,6 +21,16 @@ class Work:
         self.word_count = 0
         self.tags = []
         self.last_visited = ''
+        self.kudos = 0
+        self.hits = 0
+        self.published = ''
+        self.language = ''
+        self.completed_chapters = 0
+        self.total_chapters = 0
+        self.completed = False
+        self.comments = 0
+        self.bookmarks = 0
+        self.fandoms = []
 
 
 
@@ -81,6 +91,32 @@ def scrape(USERNAME, PASSWORD):
                     # Get Work Tags
                     this_work.tags = utils.get_work_tags(work)
 
+                    # Get Language
+                    this_work.language = utils.get_language(work)
+
+                    # Get Chapters
+                    this_work.completed_chapters, this_work.total_chapters = utils.get_chapters(work)
+
+                    # Get Completed Status
+                    this_work.completed = utils.is_completed(work)
+
+                    # Get Comments
+                    this_work.comments = utils.get_comments(work)
+
+                    # Get Kudos
+                    this_work.kudos = utils.get_kudos(work)
+
+                    # Get Bookmarks
+                    this_work.bookmarks = utils.get_bookmarks(work)
+
+                    # Get Hits
+                    this_work.hits = utils.get_hits(work)
+
+                    # Get Fandoms
+                    this_work.fandoms = utils.get_fandoms(work)
+
+                    
+
                     # Add Work To Users Works
                     this_user.works.append(this_work)
 
@@ -99,7 +135,6 @@ def scrape(USERNAME, PASSWORD):
                     dict_collection.append(dictionary)
 
                     DB_Access.insert_work_into_database(this_work)
-
                 except Exception as e:
                     eel.printToOutput(f'ERROR getting work on page {page_num} >>>> ERROR: {e}')
             page_num = page_num + 1

@@ -4,4 +4,10 @@ __pycache__/
 Scripts
 Lib
 /Scrape_Results
-all_works.json
+/Scrape_Results/all_works.json
+/Testing
+/References
+/Database_Testing
+works.db
+scrape_test.py
+additional_stats_test.py
