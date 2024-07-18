@@ -2,6 +2,7 @@ import eel
 import ao3_scrape
 import utils
 import metrics
+import sqlite3
 
 # Set web files folder
 eel.init('GUI')
@@ -43,6 +44,34 @@ def fill_ships_table():
 @eel.expose
 def fill_recently_visited_table():
     return utils.build_recently_visited_table(metrics.get_top_5_recently_visited_works())
+
+# Function to connect to the SQLite database
+def connect_db():
+    conn = sqlite3.connect('works.db')
+    return conn
+
+@eel.expose
+def get_search_results(search_term, search_type):
+    conn = connect_db()
+    cursor = conn.cursor()
+    if search_type == 'tags':
+        search_query = """
+        SELECT w.title, a.author
+        FROM works w
+        JOIN work_tags wt ON wt.work_id = w.id
+        JOIN tags t ON t.id = wt.tag_id
+        JOIN authors a ON a.id = w.author_id
+        WHERE t.tag LIKE ?
+        """
+        cursor.execute(search_query, (f'%{search_term}%',))
+    else:  # search_type == 'works'
+        search_query = "SELECT title, author FROM works WHERE title LIKE ?"
+        cursor.execute(search_query, (f'%{search_term}%',))
+
+    results = cursor.fetchall()
+    conn.close()
+    return results
+
 
 eel.start('main.html', size=(700, 700)) 
  # Start

@@ -80,9 +80,28 @@
       <!-- Search Tab -->
       <div id="Search" class="tabcontent">
         <input type="text" id="search-input" placeholder="Search...">
-        <input type="radio" name="search-type" value="tags" checked>Tags<input type="radio" name="search-type" value="works">Works
+        <input type="radio" name="search-type" value="tags" id="search-type-tags" checked>Tags
+        <input type="radio" name="search-type" value="works" id="search-type-works">Works
         <button type="button" id="search-btn" onclick="initiateSearch()">Search</button>
+        <table id="search-results-table">
+            <!-- Table to display search results -->
+        </table>
       </div>
+      <script>
+        // JavaScript functions
+        function initiateSearch() {
+            const searchTerm = document.getElementById("search-input").value;
+            const searchType = document.querySelector('input[name="search-type"]:checked').value;
+            
+            // Clear previous results
+            let searchResultsTable = document.getElementById("search-results-table");
+            searchResultsTable.innerHTML = "";
+            
+            console.log(eel.get_search_results(searchTerm, searchType))
+        }
+      </script>
+
+    
   <!-- Recently Visited Tab -->  
       <div id = "Recently Visited" class = "tabcontent"> 
            <table id = "recently-visited-table"></table>
