@@ -431,6 +431,28 @@ def build_recently_visited_table(top_5_works):
     html_table += "</table>"
     return html_table
 
+def build_search_table(results):
+    html_table = '''
+    <table border="1">
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Rating</th>
+            <th>Kudos</th>
+        </tr>
+    '''
+    for r in results:
+        html_table += f'''
+        <tr>
+            <td>{r[0]}</td>
+            <td>{r[1]}</td>
+            <td>{r[2]}</td>
+            <td>{r[3]}</td>
+        </tr>
+        '''
+    html_table += "</table>"
+    return html_table
+
 ############################################
 ## OTHER
 ############################################
@@ -512,7 +534,7 @@ def get_works_by_author_a(author_name):
 
 
 def get_works_by_author_b(author_name):
-    conn = sqlite3.connect('works.db')  # replace 'database.db' with your database name
+    conn = sqlite3.connect('works.db') 
     c = conn.cursor()
 
     # Get the author id from the authors table
@@ -531,13 +553,53 @@ def get_works_by_author_b(author_name):
             c.execute("SELECT tag FROM tags JOIN work_tags ON tags.id=work_tags.tag_id WHERE work_tags.work_id=?", (work_id,))
             tags = c.fetchall()
             works[i] += (tags,)
-        
+        conn.close()
         return works
     else:
+        conn.close()
         return None
 
-    conn.close()
 
+
+def get_search_results(search_term, search_type):
+    conn = sqlite3.connect('works.db') 
+    cursor = conn.cursor()
+    # Create the SQL query with the provided tag
+    query = """
+        SELECT
+            w.title,
+            a.author,
+            w.rating,
+            w.kudos
+        FROM
+            works AS w
+        JOIN
+            authors AS a 
+            ON w.author_id = a.id
+        JOIN
+            work_tags AS wt
+            ON w.id = wt.work_id
+        JOIN
+            tags AS t
+            ON wt.tag_id = t.id
+        WHERE
+            t.tag LIKE ?
+        GROUP BY
+            w.title, a.author, w.rating, w.word_count, w.date_published, w.kudos
+        ORDER BY
+            w.kudos DESC;
+    """
+
+    # Execute the query with the provided tag and fetch the results
+    try:
+        cursor.execute(query, (f'%{search_term}%',))
+        results = cursor.fetchall()
+        conn.close()
+        return results
+    except sqlite3.Error as e:
+        print(f"Error executing SQL query: {e}")
+        conn.close()
+        return []
 
 
 

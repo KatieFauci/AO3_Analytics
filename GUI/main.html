@@ -2,14 +2,14 @@
 <html>
    <head>
         <link rel="stylesheet" href="style.css">
-        <title>Hello, World!</title>
+        <title>AO3 History Tool</title>
         <h1 class = "top-title">AO3 History Tool</h1>
 
         <script type = "text/javascript" src = "/eel.js"></script>
         <script src = "/script.js"></script>
    </head>
 
-   <body id = "Main" onload = "defaultTab()">
+   <body id = "Main" onload = "openTab(event, 'Scrape','Main')">
     <!-- Tab links -->
       <div class = "tab">
            <button class = "tablinks" onclick = "openTab(event, 'Scrape','Main')" id = "defaultOpen">Scrape</button>
@@ -53,7 +53,7 @@
   
         <!-- Tag Tab content --> 
         <div id = "Top10" class = "tabcontent">
-           <table id = "tags-table">tags table</table>
+           <table id = "tags-table"></table>
         </div>
         <div id = "Characters" class = "tabcontent"> 
            <table id = "characters-table"></table>
@@ -82,11 +82,12 @@
         <input type="text" id="search-input" placeholder="Search...">
         <input type="radio" name="search-type" value="tags" id="search-type-tags" checked>Tags
         <input type="radio" name="search-type" value="works" id="search-type-works">Works
-        <button type="button" id="search-btn" onclick="initiateSearch()">Search</button>
+        <button type="button" id="search-btn" onclick="searchClicked()">Search</button>
         <table id="search-results-table">
             <tr>
                <th>Title</th>
                <th>Author</th>
+               <th>Rating</th>
                <th>Kudos</th>
          </tr>
         </table>

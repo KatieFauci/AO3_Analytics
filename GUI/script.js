@@ -16,7 +16,7 @@ function printToOutput(output) {
 //** Opens the Default tab */
 function defaultTab(tabId){
     document.getElementById(tabId).click();
-    openTab
+    openTab()
 }
 
 //** Opens the tab clicked */
@@ -74,12 +74,14 @@ async function fillUserStats() {
   document.getElementById("stats-table").innerHTML = table;
 };
 
-function initiateSearch(){
+async function searchClicked(){
   console.log("Search Initiated");
-  document.getElementById("search-input").value;
-  console.log("Search Value: " + value)
-
-}
+  var searchTerm = document.getElementById("search-input").value;
+  var searchType = document.querySelector('input[name="search-type"]:checked').value;
+  const table = await eel.get_search_results(searchTerm, searchType)();
+  console.log(table);
+  document.getElementById("search-results-table").innerHTML = table;
+};
 
 
 //--------------------------------------------------
@@ -115,36 +117,6 @@ async function fillShipsTable() {
 async function fillRecentlyVisitedTable() {
   const table = await eel.fill_recently_visited_table()();
   document.getElementById("recently-visited-table").innerHTML = table;
-}
-
-
-function displaySearchResults(results) {
-    const searchResultsTable = document.getElementById("search-results-table");
-    // Clear previous results
-    searchResultsTable.innerHTML = `
-        <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Kudos</th>
-        </tr>
-    `;
-    
-    for (const result of results) {
-        const row = document.createElement("tr");
-        
-        // Create and populate table cells
-        const titleCell = document.createElement("td");
-        titleCell.textContent = result[0];
-        const authorCell = document.createElement("td");
-        authorCell.textContent = result[1];
-        const kudosCell = document.createElement("td");
-        kudosCell.textContent = result[5];
-        
-        row.appendChild(titleCell);
-        row.appendChild(authorCell);
-        row.appendChild(kudosCell); 
-        searchResultsTable.appendChild(row);
-    }
 }
 
 

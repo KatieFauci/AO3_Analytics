@@ -51,25 +51,9 @@ def connect_db():
     return conn
 
 @eel.expose
-def get_search_results(search_term, search_type):
-    conn = connect_db()
-    cursor = conn.cursor()
-    if search_type == 'tags':
-        search_query = """
-        SELECT w.title, a.author
-        FROM works w
-        JOIN work_tags wt ON wt.work_id = w.id
-        JOIN tags t ON t.id = wt.tag_id
-        JOIN authors a ON a.id = w.author_id
-        WHERE t.tag LIKE ?
-        """
-        cursor.execute(search_query, (f'%{search_term}%',))
-    else:  # search_type == 'works'
-        search_query = "SELECT title, author FROM works WHERE title LIKE ?"
-        cursor.execute(search_query, (f'%{search_term}%',))
-
-    results = cursor.fetchall()
-    conn.close()
+def get_search_results(term, type):
+    print(f'{term}:{type}')
+    results = utils.build_search_table(utils.get_search_results(term, type))
     return results
 
 
