@@ -90,3 +90,49 @@ table {
       background-color: #92110C;
       color: white;
   }
+
+
+/*
+**
+** Search Side bar styles
+*/
+  .sidebar {
+    float: left;
+    width: 180px; /* Adjust the width to make it thinner */
+    background-color: #f0f0f0;
+    padding: 10px;
+  }
+  
+  .main-content {
+    margin-left: 190px; /* Slightly wider margin to accommodate the thinner sidebar */
+  }
+  
+  .search-by-options,
+  .filter-options {
+    margin-bottom: 20px;
+  }
+  
+  .search-by-options h3,
+  .filter-options h3 {
+    margin-bottom: 10px;
+  }
+
+  .search-by-options label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  #rating-content label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  #word-count-content {
+    display: flex;
+    flex-direction: column; /*  Put the label and slider on separate lines */
+    align-items: flex-start;
+  }
+  
+  #word-count-value {
+    margin-left: 10px;
+  }

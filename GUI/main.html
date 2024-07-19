@@ -77,33 +77,48 @@
        <div id = "Top10Ships" class = "tabcontent"> this is the top 10 tab </div>      
      </div>  
  
-      <!-- Search Tab -->
-      <div id="Search" class="tabcontent">
-        <input type="text" id="search-input" placeholder="Search...">
-        <input type="radio" name="search-type" value="tags" id="search-type-tags" checked>Tags
-        <input type="radio" name="search-type" value="works" id="search-type-works">Works
-        <button type="button" id="search-btn" onclick="searchClicked()">Search</button>
-        <table id="search-results-table">
+     <div id="Search" class="tabcontent">
+      <div class="sidebar">
+        <div class="search-by-options">
+          <h3>Search by Options</h3>
+          <label for="title-search"><input type="radio" name="search-type" value="title" id="search-type-title">Title</label>
+          <label for="author-search"><input type="radio" name="search-type" value="author" id="search-type-author">Author</label>
+          <label for="tag-search"><input type="radio" name="search-type" value="tags" id="search-type-tags" checked>Tags</label>
+        </div>
+        <div class="filter-options">
+          <h3>Filter Options</h3>
+          <div id="rating-content">
+            <h4>Rating:</h4>
+               <label for="rating-1"><input type="checkbox" name="rating" value="1" id="rating-1">1</label>
+               <label for="rating-2"><input type="checkbox" name="rating" value="2" id="rating-2">2</label>
+               <label for="rating-3"><input type="checkbox" name="rating" value="3" id="rating-3">3</label>
+               <label for="rating-4"><input type="checkbox" name="rating" value="4" id="rating-4">4</label>
+               <label for="rating-5"><input type="checkbox" name="rating" value="5" id="rating-5">5</label>
+            </div>
+            <div id="word-count-content">
+               <label for="word-count-slider">Word Count:</label>
+               <input type="range" min="0" max="100000" value="50000" id="word-count-slider">
+               <span id="word-count-value">50000</span>
+            </div>
+          </div>
+        </div>
+         <div class="main-content">
+         <input type="text" id="search-input" placeholder="Search...">
+         <button type="button" id="search-btn" onclick="searchClicked()">Search</button>
+         <table id="search-results-table">
             <tr>
                <th>Title</th>
                <th>Author</th>
                <th>Rating</th>
                <th>Kudos</th>
-         </tr>
-        </table>
+            </tr>
+         </table>
+         </div>
       </div>
       <script>
-        // JavaScript functions
-        function initiateSearch() {
-            const searchTerm = document.getElementById("search-input").value;
-            const searchType = document.querySelector('input[name="search-type"]:checked').value;
-            
-            // Clear previous results
-            let searchResultsTable = document.getElementById("search-results-table");
-            searchResultsTable.innerHTML = "";
-            
-            console.log(eel.get_search_results(searchTerm, searchType))
-        }
+         document.getElementById('word-count-slider').addEventListener('input', function() {
+            document.getElementById('word-count-value').textContent = this.value;
+         });
       </script>
 
     
