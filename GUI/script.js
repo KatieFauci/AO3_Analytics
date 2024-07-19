@@ -7,14 +7,19 @@ function printToOutput(output) {
     ele.scrollTop = ele.scrollHeight;
 }
 
-function defaultTab(){
-    document.getElementById("defaultOpen").click();
+//--------------------------------------------------
+//
+//  Tab Navigation
+//
+//--------------------------------------------------
+
+//** Opens the Default tab */
+function defaultTab(tabId){
+    document.getElementById(tabId).click();
+    openTab
 }
 
-function defaultTagTab(){
-  document.getElementById("Tags").getElementById("defaultTagTab").click();
-}
-
+//** Opens the tab clicked */
 function openTab(evt, tabName, parentTabId) {
   console.log("openTab called with tabName:", tabName, "and parentTabId:", parentTabId);  
   var i, tabcontent, tablinks;
@@ -37,24 +42,14 @@ function openTab(evt, tabName, parentTabId) {
   // Add "active" class to the clicked button
   evt.currentTarget.className += " active";
 
-  // Declare a variable to store the default subTab id
-  let defaultSubTab = document.getElementById(defaultSubTabName);  
-    
-  // If a default subTab is provided and it exists, open that tab
-  if (defaultSubTab) {
-      defaultSubTab.click();
-  }
-
 }
 
-eel.expose(say_hello_js);               // Expose this function to Python
-function say_hello_js(x) {
-    console.log("Hello here from " + x);
-}
 
-say_hello_js("Javascript World!");
-eel.say_hello_py("Javascript World!!!");  // Call a Python function
-
+//--------------------------------------------------
+//
+//  Button Actions
+//
+//--------------------------------------------------
 function clickHistoryButton() { 
                   
     var doc = document.getElementById("get-history-btn");
@@ -79,6 +74,19 @@ async function fillUserStats() {
   document.getElementById("stats-table").innerHTML = table;
 };
 
+function initiateSearch(){
+  console.log("Search Initiated");
+  document.getElementById("search-input").value;
+  console.log("Search Value: " + value)
+
+}
+
+
+//--------------------------------------------------
+//
+//  Table Construction
+//
+//--------------------------------------------------
 async function fillTagsTable(thisTable, tagClass) {
   var table = "empty table";
   console.log(table);
@@ -108,3 +116,35 @@ async function fillRecentlyVisitedTable() {
   const table = await eel.fill_recently_visited_table()();
   document.getElementById("recently-visited-table").innerHTML = table;
 }
+
+
+function displaySearchResults(results) {
+    const searchResultsTable = document.getElementById("search-results-table");
+    // Clear previous results
+    searchResultsTable.innerHTML = `
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Kudos</th>
+        </tr>
+    `;
+    
+    for (const result of results) {
+        const row = document.createElement("tr");
+        
+        // Create and populate table cells
+        const titleCell = document.createElement("td");
+        titleCell.textContent = result[0];
+        const authorCell = document.createElement("td");
+        authorCell.textContent = result[1];
+        const kudosCell = document.createElement("td");
+        kudosCell.textContent = result[5];
+        
+        row.appendChild(titleCell);
+        row.appendChild(authorCell);
+        row.appendChild(kudosCell); 
+        searchResultsTable.appendChild(row);
+    }
+}
+
+

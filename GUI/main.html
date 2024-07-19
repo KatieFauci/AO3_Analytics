@@ -43,7 +43,7 @@
            <table id="stats-table">  </table>
       </div>
  
-      <div id = "Tags" class = "tabcontent" onload = "defaultTab()">
+      <div id = "Tags" class = "tabcontent" onload = "openTab(event,'Top10','Tags', 'defaultTagTab')">
         <!-- Tag Tab Links --> 
         <div class = "tab"> 
         <button class = "tablinks" onclick = "fillTagsTable('tags-table', null);openTab(event,'Top10','Tags', 'defaultTagTab');" id = "defaultSubTab" class = "active">Top 10 Tags</button>
@@ -63,10 +63,10 @@
         </div>
      </div>
  
-      <div id = "Ships" class = "tabcontent">  
+      <div id = "Ships" class = "tabcontent" onload="openTab(event,'AllShips','Ships')">  
        <!-- Ship Tab Links -->      
        <div class = "tab"> 
-        <button class = "tablinks" onclick = "fillShipsTable();openTab(event,'AllShips','Ships');" id = "defaultSubTab">All Ships</button>
+        <button class = "tablinks" onclick = "fillShipsTable();openTab(event,'AllShips','Ships');" id = "defaultShipsTab">All Ships</button>
         <button class = "tablinks" onclick = "openTab(event, 'Top10Ships','Ships')">Top 10 Ships</button> 
        </div>  
   
@@ -84,7 +84,11 @@
         <input type="radio" name="search-type" value="works" id="search-type-works">Works
         <button type="button" id="search-btn" onclick="initiateSearch()">Search</button>
         <table id="search-results-table">
-            <!-- Table to display search results -->
+            <tr>
+               <th>Title</th>
+               <th>Author</th>
+               <th>Kudos</th>
+         </tr>
         </table>
       </div>
       <script>

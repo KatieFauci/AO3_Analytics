@@ -191,3 +191,49 @@ def insert_work_into_database(data):
     conn.close()
 
 
+def search_works_by_tag(database_file, tag):
+    # Open the SQLite database file
+    conn = sqlite3.connect(database_file)
+    cursor = conn.cursor()
+
+    # Create the SQL query with the provided tag
+    query = """
+        SELECT
+            w.title,
+            a.author,
+            w.rating,
+            w.word_count,
+            w.date_published,
+            w.kudos
+        FROM
+            works AS w
+        JOIN
+            authors AS a 
+            ON w.author_id = a.id
+        JOIN
+            work_tags AS wt
+            ON w.id = wt.work_id
+        JOIN
+            tags AS t
+            ON wt.tag_id = t.id
+        WHERE
+            t.tag LIKE ?
+        GROUP BY
+            w.title, a.author, w.rating, w.word_count, w.date_published, w.kudos
+        ORDER BY
+            w.kudos DESC;
+    """
+
+    # Execute the query with the provided tag and fetch the results
+    try:
+        cursor.execute(query, (f'%{tag}%',))
+        results = cursor.fetchall()
+        conn.close()
+        print(results)
+        return results
+    except sqlite3.Error as e:
+        print(f"Error executing SQL query: {e}")
+        conn.close()
+        return []
+
+
