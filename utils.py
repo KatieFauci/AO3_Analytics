@@ -41,6 +41,10 @@ def store_user_data(user):
     with open("Scrape_Results/user_data.json", "w") as outfile:
         outfile.write(json_object)
 
+
+#----------------------------------------
+# Scrape Functions
+#----------------------------------------
 def get_title(work):
      temp = work.find_all('div', class_='header module')[0].find_all('h4')[0].find_all('a')
      return temp[0].get_text()
@@ -129,7 +133,7 @@ def compile_user_tags(user):
 def get_work_word_count(work):
     return int(work.dl.dd.next_sibling.next_sibling.next_sibling.next_sibling.get_text().replace(',', ''))
 
-def last_visited_date(work):
+def get_last_visited_date(work):
     date_str = work.find('div', class_='user module group').h4.get_text().split(':')[1].split('\n')[0].strip(' ')
     return datetime.strptime(date_str, '%d %b %Y')
 
@@ -601,6 +605,52 @@ def get_search_results(search_term, search_type):
         conn.close()
         return []
 
+
+
+def search_database(search_type, search_term, rating=None, word_count=None):
+    conn = sqlite3.connect('works.db')  # Replace 'your_database.db' with the actual filename
+    c = conn.cursor()
+
+    query = """
+    SELECT DISTINCT w.title, a.author, w.rating, w.word_count, w.date_published
+    FROM works w
+    JOIN authors a ON w.author_id = a.id
+    """
+    where_clause = []
+    args = []
+    
+    if search_type == 'title':
+        where_clause.append("w.title LIKE ?")
+        args.append(f'%{search_term}%')
+    elif search_type == 'author':
+        where_clause.append("a.author LIKE ?")
+        args.append(f'%{search_term}%')        
+    elif search_type == 'tag':
+        query += """
+                JOIN work_tags wt ON wt.work_id = w.id
+                JOIN tags t ON t.id = wt.tag_id
+                """
+        where_clause.append("t.tag LIKE ?")
+        args.append(f'%{search_term}%')
+        
+    if rating:
+        where_clause.append("w.rating = ?")
+        args.append(rating)
+    
+    if word_count:
+        where_clause.append("w.word_count > ?")
+        args.append(word_count)
+    
+    if where_clause:
+        query += " WHERE " + " AND ".join(where_clause)
+    
+    query += ";"
+    
+    c.execute(query, args)
+    data = c.fetchall()
+    conn.close()
+    
+    return data
 
 
 

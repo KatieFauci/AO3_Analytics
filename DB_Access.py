@@ -57,6 +57,20 @@ CREATE_WORK_SERIES_RELATION_TABLE = '''CREATE TABLE IF NOT EXISTS work_series (
                     FOREIGN KEY(work_id) REFERENCES works(id),
                     FOREIGN KEY(series_id) REFERENCES series(series_id)
               )'''
+CREATE_RATINGS_TABLE = '''CREATE TABLE IF NOT EXISTS ratings (
+                    id INTEGER PRIMARY KEY,
+                    rating TEXT UNIQUE,
+                    rating_symbol TEXT UNIQUE
+                );'''
+
+# Initalize Reference Tables
+INITALIZE_RATINGS_TABLE = '''INSERT INTO ratings (rating, rating_symbol) VALUES
+                    ('General Audiences', 'G'),
+                    ('Teen And Up Audiences', 'T'),
+                    ('Mature', 'M'),
+                    ('Explicit', 'E'),
+                    ('Not Rated', 'NR')
+                ;'''
 
 # Inserting to tables
 INSERT_AUTHOR = "INSERT INTO authors (author) VALUES (?)"
@@ -96,6 +110,10 @@ def create_database():
     c.execute(CREATE_WORK_FANDOM_RELATION_TABLE)  
     c.execute(CREATE_SERIES_TABLE)
     c.execute(CREATE_WORK_SERIES_RELATION_TABLE)
+    c.execute(CREATE_RATINGS_TABLE)
+
+    # Initalize Table Date
+    c.execute(INITALIZE_RATINGS_TABLE)
 
     conn.commit()
     conn.close()
@@ -129,7 +147,7 @@ def add_work(data, author_id, c):
 
     if work_id is None:
         c.execute(INSERT_WORK,
-                  (data.title, author_id, data.rating, data.word_count, data.last_visited, data.published, data.language, data.completed_chapters, data.total_chapters, data.completed, data.comments, data.kudos, data.bookmarks, data.hits))
+                  (data.title, author_id, data.rating, data.word_count, data.last_visited, data.date_published, data.language, data.completed_chapters, data.total_chapters, data.completed, data.comments, data.kudos, data.bookmarks, data.hits))
         work_id = c.lastrowid
         return work_id
 
