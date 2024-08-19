@@ -3,6 +3,13 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 
+class result:
+    def __init__(self, tag, tag_count, tag_percent):
+        self.tag = ""
+        self.tag_count = 0
+        self.tag_percent = 0
+
+
 db_name = 'works.db'
 '''
 Counts the number of times each tag in the database appears. 
@@ -81,10 +88,23 @@ def top_10_tags(db_name, tag_class=None):
                   LIMIT 10;
                   """)
 
-    result = c.fetchall()
+    tag_data = c.fetchall()
+
+    # Get total number of works
+    c.execute("""
+    SELECT count(*) FROM works;          
+    """)
+    work_count = c.fetchall()
+
     conn.close()
 
-    return result
+    # Build Results
+    results = []
+    for t in tag_data:
+        percent = round((int(t[1])/int(work_count[0][0]))*100, 2)
+        results.append([t[0],t[1],f"{percent}%"])
+
+    return results
 
 
 

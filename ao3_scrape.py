@@ -18,12 +18,12 @@ class Work:
         self.title = ''
         self.author = ''
         self.rating = ''
+        self.date_published = ''
         self.word_count = 0
         self.tags = []
         self.last_visited = ''
         self.kudos = 0
         self.hits = 0
-        self.published = ''
         self.language = ''
         self.completed_chapters = 0
         self.total_chapters = 0
@@ -36,8 +36,8 @@ class Work:
 
 def scrape(USERNAME, PASSWORD):
 
-    USERNAME = ""
-    PASSWORD = ""
+    USERNAME = "WrongfulRuffian"
+    PASSWORD = "Szi646Feis!5SWH"
 
     eel.printToOutput("USERNAME: " + USERNAME)
     eel.printToOutput("PASSWORD: " + PASSWORD)
@@ -69,50 +69,21 @@ def scrape(USERNAME, PASSWORD):
             for work in soup.find_all('li', attrs={"role": "article"}):
                 try:
                     this_work = Work()
-
-                    # Get title
                     this_work.title = utils.get_title(work)
-
-                    # Get author
                     this_work.author = utils.get_author(work)
-
-                    # TODO: Get Rating
                     this_work.rating = utils.get_rating(work)
-
-                    # Get Work Word Count
+                    this_work.date_published = utils.get_date_published(work)
                     this_work.word_count = utils.get_work_word_count(work)
-
-                    # Increment Total Word Count
                     this_user.total_words = this_user.total_words + this_work.word_count
-
-                    # Get Date Last Visited
-                    this_work.last_visited = utils.last_visited_date(work)
-
-                    # Get Work Tags
+                    this_work.last_visited = utils.get_last_visited_date(work)
                     this_work.tags = utils.get_work_tags(work)
-
-                    # Get Language
                     this_work.language = utils.get_language(work)
-
-                    # Get Chapters
                     this_work.completed_chapters, this_work.total_chapters = utils.get_chapters(work)
-
-                    # Get Completed Status
                     this_work.completed = utils.is_completed(work)
-
-                    # Get Comments
                     this_work.comments = utils.get_comments(work)
-
-                    # Get Kudos
                     this_work.kudos = utils.get_kudos(work)
-
-                    # Get Bookmarks
                     this_work.bookmarks = utils.get_bookmarks(work)
-
-                    # Get Hits
                     this_work.hits = utils.get_hits(work)
-
-                    # Get Fandoms
                     this_work.fandoms = utils.get_fandoms(work)
 
                     
@@ -122,7 +93,7 @@ def scrape(USERNAME, PASSWORD):
 
                     # Inc Story Count
                     this_user.story_count = this_user.story_count + 1
-
+                    '''
                     # Store info as JSON
                     dictionary = {
                         "Title": this_work.title,
@@ -133,7 +104,7 @@ def scrape(USERNAME, PASSWORD):
                         "Tags": this_work.tags    
                     }
                     dict_collection.append(dictionary)
-
+                    '''
                     DB_Access.insert_work_into_database(this_work)
                 except Exception as e:
                     eel.printToOutput(f'ERROR getting work on page {page_num} >>>> ERROR: {e}')

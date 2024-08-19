@@ -41,6 +41,10 @@ def store_user_data(user):
     with open("Scrape_Results/user_data.json", "w") as outfile:
         outfile.write(json_object)
 
+
+#----------------------------------------
+# Scrape Functions
+#----------------------------------------
 def get_title(work):
      temp = work.find_all('div', class_='header module')[0].find_all('h4')[0].find_all('a')
      return temp[0].get_text()
@@ -129,7 +133,7 @@ def compile_user_tags(user):
 def get_work_word_count(work):
     return int(work.dl.dd.next_sibling.next_sibling.next_sibling.next_sibling.get_text().replace(',', ''))
 
-def last_visited_date(work):
+def get_last_visited_date(work):
     date_str = work.find('div', class_='user module group').h4.get_text().split(':')[1].split('\n')[0].strip(' ')
     return datetime.strptime(date_str, '%d %b %Y')
 
@@ -383,18 +387,19 @@ def build_stats_table():
 
 
 def build_tags_table(tag_class=None):
-    tags = metrics.top_10_tags(db_name, tag_class)
+    results = metrics.top_10_tags(db_name, tag_class)
     html_table = """
     <table>
         <tbody>
     """
     count = 1;
-    for tag in tags:
-        html_table += f"<tr><td>{count}</td><td>{tag[0]}</td><td>{tag[1]}</td></tr>"
+    for r in results:
+        html_table += f"<tr><td>{count}</td><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td></tr>"
         count += 1
 
     html_table += """</tbody></table>"""
     return html_table
+
 
 def build_ship_table(input_list):
  
@@ -426,6 +431,28 @@ def build_recently_visited_table(top_5_works):
             <td>{work[1]}</td>
             <td>{work[2]}</td>
             <td>{work[3]}</td>
+        </tr>
+        '''
+    html_table += "</table>"
+    return html_table
+
+def build_search_table(results):
+    html_table = '''
+    <table border="1">
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Rating</th>
+            <th>Kudos</th>
+        </tr>
+    '''
+    for r in results:
+        html_table += f'''
+        <tr>
+            <td>{r[0]}</td>
+            <td>{r[1]}</td>
+            <td>{r[2]}</td>
+            <td>{r[3]}</td>
         </tr>
         '''
     html_table += "</table>"
@@ -512,7 +539,7 @@ def get_works_by_author_a(author_name):
 
 
 def get_works_by_author_b(author_name):
-    conn = sqlite3.connect('works.db')  # replace 'database.db' with your database name
+    conn = sqlite3.connect('works.db') 
     c = conn.cursor()
 
     # Get the author id from the authors table
@@ -531,14 +558,100 @@ def get_works_by_author_b(author_name):
             c.execute("SELECT tag FROM tags JOIN work_tags ON tags.id=work_tags.tag_id WHERE work_tags.work_id=?", (work_id,))
             tags = c.fetchall()
             works[i] += (tags,)
-        
+        conn.close()
         return works
     else:
+        conn.close()
         return None
 
+
+
+def get_search_results(search_term, search_type):
+    conn = sqlite3.connect('works.db') 
+    cursor = conn.cursor()
+    # Create the SQL query with the provided tag
+    query = """
+        SELECT
+            w.title,
+            a.author,
+            w.rating,
+            w.kudos
+        FROM
+            works AS w
+        JOIN
+            authors AS a 
+            ON w.author_id = a.id
+        JOIN
+            work_tags AS wt
+            ON w.id = wt.work_id
+        JOIN
+            tags AS t
+            ON wt.tag_id = t.id
+        WHERE
+            t.tag LIKE ?
+        GROUP BY
+            w.title, a.author, w.rating, w.word_count, w.date_published, w.kudos
+        ORDER BY
+            w.kudos DESC;
+    """
+
+    # Execute the query with the provided tag and fetch the results
+    try:
+        cursor.execute(query, (f'%{search_term}%',))
+        results = cursor.fetchall()
+        conn.close()
+        return results
+    except sqlite3.Error as e:
+        print(f"Error executing SQL query: {e}")
+        conn.close()
+        return []
+
+
+
+def search_database(search_type, search_term, rating=None, word_count=None):
+    conn = sqlite3.connect('works.db')  # Replace 'your_database.db' with the actual filename
+    c = conn.cursor()
+
+    query = """
+    SELECT DISTINCT w.title, a.author, w.rating, w.word_count, w.date_published
+    FROM works w
+    JOIN authors a ON w.author_id = a.id
+    """
+    where_clause = []
+    args = []
+    
+    if search_type == 'title':
+        where_clause.append("w.title LIKE ?")
+        args.append(f'%{search_term}%')
+    elif search_type == 'author':
+        where_clause.append("a.author LIKE ?")
+        args.append(f'%{search_term}%')        
+    elif search_type == 'tag':
+        query += """
+                JOIN work_tags wt ON wt.work_id = w.id
+                JOIN tags t ON t.id = wt.tag_id
+                """
+        where_clause.append("t.tag LIKE ?")
+        args.append(f'%{search_term}%')
+        
+    if rating:
+        where_clause.append("w.rating = ?")
+        args.append(rating)
+    
+    if word_count:
+        where_clause.append("w.word_count > ?")
+        args.append(word_count)
+    
+    if where_clause:
+        query += " WHERE " + " AND ".join(where_clause)
+    
+    query += ";"
+    
+    c.execute(query, args)
+    data = c.fetchall()
     conn.close()
-
-
+    
+    return data
 
 
 

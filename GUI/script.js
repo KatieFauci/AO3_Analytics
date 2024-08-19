@@ -7,14 +7,36 @@ function printToOutput(output) {
     ele.scrollTop = ele.scrollHeight;
 }
 
-function defaultTab(){
-    document.getElementById("defaultOpen").click();
+function getSearchInfo() {
+  const searchTypeElement = document.querySelector('input[name="search-type"]:checked');
+  const searchType = searchTypeElement ? searchTypeElement.value : null;
+
+  const selectedRatings = Array.from(document.querySelectorAll('input[name="rating"]:checked'))
+    .map(ratingInput => ratingInput.value);
+  
+  const wordCountSlider = document.getElementById('word-count-slider');
+  const wordCount = wordCountSlider ? wordCountSlider.value : null;
+
+  return {
+    searchType,
+    selectedRatings,
+    wordCount
+  };
 }
 
-function defaultTagTab(){
-  document.getElementById("Tags").getElementById("defaultTagTab").click();
+//--------------------------------------------------
+//
+//  Tab Navigation
+//
+//--------------------------------------------------
+
+//** Opens the Default tab */
+function defaultTab(tabId){
+    document.getElementById(tabId).click();
+    openTab()
 }
 
+//** Opens the tab clicked */
 function openTab(evt, tabName, parentTabId) {
   console.log("openTab called with tabName:", tabName, "and parentTabId:", parentTabId);  
   var i, tabcontent, tablinks;
@@ -37,24 +59,14 @@ function openTab(evt, tabName, parentTabId) {
   // Add "active" class to the clicked button
   evt.currentTarget.className += " active";
 
-  // Declare a variable to store the default subTab id
-  let defaultSubTab = document.getElementById(defaultSubTabName);  
-    
-  // If a default subTab is provided and it exists, open that tab
-  if (defaultSubTab) {
-      defaultSubTab.click();
-  }
-
 }
 
-eel.expose(say_hello_js);               // Expose this function to Python
-function say_hello_js(x) {
-    console.log("Hello here from " + x);
-}
 
-say_hello_js("Javascript World!");
-eel.say_hello_py("Javascript World!!!");  // Call a Python function
-
+//--------------------------------------------------
+//
+//  Button Actions
+//
+//--------------------------------------------------
 function clickHistoryButton() { 
                   
     var doc = document.getElementById("get-history-btn");
@@ -79,6 +91,21 @@ async function fillUserStats() {
   document.getElementById("stats-table").innerHTML = table;
 };
 
+async function searchClicked(){
+  console.log("Search Initiated");
+  var searchTerm = document.getElementById("search-input").value;
+  var searchType = document.querySelector('input[name="search-type"]:checked').value;
+  console.log(getSearchInfo())
+  const table = await eel.get_search_results(searchTerm, searchType)();
+  document.getElementById("search-results-table").innerHTML = table;
+};
+
+
+//--------------------------------------------------
+//
+//  Table Construction
+//
+//--------------------------------------------------
 async function fillTagsTable(thisTable, tagClass) {
   var table = "empty table";
   console.log(table);
@@ -108,3 +135,7 @@ async function fillRecentlyVisitedTable() {
   const table = await eel.fill_recently_visited_table()();
   document.getElementById("recently-visited-table").innerHTML = table;
 }
+
+
+
+

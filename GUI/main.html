@@ -2,22 +2,22 @@
 <html>
    <head>
         <link rel="stylesheet" href="style.css">
-        <title>Hello, World!</title>
+        <title>AO3 History Tool</title>
         <h1 class = "top-title">AO3 History Tool</h1>
 
         <script type = "text/javascript" src = "/eel.js"></script>
         <script src = "/script.js"></script>
    </head>
 
-   <body id = "Main" onload = "defaultTab()">
+   <body id = "Main" onload = "openTab(event, 'Scrape','Main')">
     <!-- Tab links -->
       <div class = "tab">
-           <button class = "tablinks" onclick = "openTab(event, 'Scrape','Main')" id = "defaultOpen">Scrape</button>
-           <button class = "tablinks" onclick = "openTab(event, 'Stats','Main');fillUserStats()">Stats</button>
-           <button class = "tablinks" onclick = "openTab(event, 'Tags','Main')">Tags</button>
-           <button class = "tablinks" onclick = "openTab(event, 'Ships','Main')">Ships</button>
-           <button class = "tablinks" onclick = "openTab(event, 'Recently Visited','Main');fillRecentlyVisitedTable()">Recently Visited</button>
-           <button class = "tablinks" onclick = "openTab(event, 'Search','Main')">Search</button>
+         <button class = "tablinks" onclick = "openTab(event, 'Scrape','Main')" id = "defaultOpen">Scrape</button>
+         <button class = "tablinks" onclick = "openTab(event, 'Stats','Main');fillUserStats()">Stats</button>
+         <button class = "tablinks" onclick = "openTab(event, 'Tags','Main')">Tags</button>
+         <button class = "tablinks" onclick = "openTab(event, 'Ships','Main')">Ships</button>
+         <button class = "tablinks" onclick = "openTab(event, 'Search','Main')">Search</button>
+         <button class = "tablinks" onclick = "openTab(event, 'Recently Visited','Main');fillRecentlyVisitedTable()">Recently Visited</button>
       </div>
 
     <!-- Tab content --> 
@@ -33,59 +33,100 @@
             <button type = "button" id = "get-history-btn" onclick = "clickHistoryButton()">Get History</button>
          </div>
          <br>
-         <div id = "output-box"> 
-         </div>
+         <div id = "output-box"></div>
       </div>
 
       <div id="Stats" class="tabcontent">
-           <button type="button" id="load-stats" onclick="fillUserStats()">Load Stats</button>
-           <button type="button" id="calc-stats">Calculate Stats</button> 
-           <table id="stats-table">  </table>
+         <button type="button" id="load-stats" onclick="fillUserStats()">Load Stats</button>
+         <button type="button" id="calc-stats">Calculate Stats</button> 
+         <table id="stats-table"></table>
       </div>
  
-      <div id = "Tags" class = "tabcontent" onload = "defaultTab()">
-        <!-- Tag Tab Links --> 
-        <div class = "tab"> 
-        <button class = "tablinks" onclick = "fillTagsTable('tags-table', null);openTab(event,'Top10','Tags', 'defaultTagTab');" id = "defaultSubTab" class = "active">Top 10 Tags</button>
-        <button class = "tablinks" onclick = "fillTagsTable('characters-table','characters');openTab(event,'Characters','Tags')">Characters</button> 
-        <button class = "tablinks" onclick = "fillTagsTable('freeform-table','freeforms');openTab(event, 'Freeform','Tags')">Freeform</button>
-        </div>
+      <div id = "Tags" class = "tabcontent" onload = "openTab(event,'Top10','Tags', 'defaultTagTab')">
+         <!-- Tag Tab Links --> 
+         <div class = "tab"> 
+            <button class = "tablinks" onclick = "fillTagsTable('tags-table', null);openTab(event,'Top10','Tags', 'defaultTagTab');" id = "defaultSubTab" class = "active">Top 10 Tags</button>
+            <button class = "tablinks" onclick = "fillTagsTable('characters-table','characters');openTab(event,'Characters','Tags')">Characters</button> 
+            <button class = "tablinks" onclick = "fillTagsTable('freeform-table','freeforms');openTab(event, 'Freeform','Tags')">Freeform</button>
+         </div>
   
-        <!-- Tag Tab content --> 
-        <div id = "Top10" class = "tabcontent">
-           <table id = "tags-table">tags table</table>
-        </div>
-        <div id = "Characters" class = "tabcontent"> 
-           <table id = "characters-table"></table>
-        </div>
-        <div id = "Freeform" class = "tabcontent">
-           <table id = "freeform-table"></table>
-        </div>
-     </div>
+         <!-- Tag Tab content --> 
+         <div id = "Top10" class = "tabcontent">
+            <table id = "tags-table"></table>
+         </div>
+         <div id = "Characters" class = "tabcontent"> 
+            <table id = "characters-table"></table>
+         </div>
+         <div id = "Freeform" class = "tabcontent">
+            <table id = "freeform-table"></table>
+         </div>
+      </div>
  
-      <div id = "Ships" class = "tabcontent">  
-       <!-- Ship Tab Links -->      
-       <div class = "tab"> 
-        <button class = "tablinks" onclick = "fillShipsTable();openTab(event,'AllShips','Ships');" id = "defaultSubTab">All Ships</button>
-        <button class = "tablinks" onclick = "openTab(event, 'Top10Ships','Ships')">Top 10 Ships</button> 
-       </div>  
+      <div id = "Ships" class = "tabcontent" onload="openTab(event,'AllShips','Ships')">  
+         <!-- Ship Tab Links -->      
+         <div class = "tab"> 
+            <button class = "tablinks" onclick = "fillShipsTable();openTab(event,'AllShips','Ships');" id = "defaultShipsTab">All Ships</button>
+            <button class = "tablinks" onclick = "openTab(event, 'Top10Ships','Ships')">Top 10 Ships</button> 
+         </div>  
   
         <!-- Ship Tab content -->  
-       <div id = "AllShips" class = "tabcontent">
-        <table id = "ship-table"></table>
-       </div>
-       <div id = "Top10Ships" class = "tabcontent"> this is the top 10 tab </div>      
-     </div>  
- 
-      <!-- Search Tab -->
-      <div id="Search" class="tabcontent">
-        <input type="text" id="search-input" placeholder="Search...">
-        <input type="radio" name="search-type" value="tags" checked>Tags<input type="radio" name="search-type" value="works">Works
-        <button type="button" id="search-btn" onclick="initiateSearch()">Search</button>
+         <div id = "AllShips" class = "tabcontent">
+            <table id = "ship-table"></table>
+         </div>
+         <div id = "Top10Ships" class = "tabcontent"> this is the top 10 tab </div>      
       </div>
-  <!-- Recently Visited Tab -->  
+      
+      <!-- Recently Visited Tab Content -->  
       <div id = "Recently Visited" class = "tabcontent"> 
-           <table id = "recently-visited-table"></table>
+         <table id = "recently-visited-table"></table>
       </div>
+      
+      <!-- Search Tab Content -->
+      <div id="Search" class="tabcontent">
+         <div class="sidebar">
+            <div class="search-input">
+               <input type="text" id="search-input" placeholder="Search...">
+               <button type="button" id="search-btn" onclick="searchClicked()">Search</button>
+            </div>
+            <div class="search-by-options">
+               <h3>Search by Options</h3>
+               <label for="title-search"><input type="radio" name="search-type" value="title" id="search-type-title">Title</label>
+               <label for="author-search"><input type="radio" name="search-type" value="author" id="search-type-author">Author</label>
+               <label for="tag-search"><input type="radio" name="search-type" value="tags" id="search-type-tags" checked>Tags</label>
+            </div>
+            <div class="filter-options">
+               <h3>Filter Options</h3>
+               <div id="rating-content">
+                  <h4>Rating:</h4>
+                  <label for="rating-1"><input type="checkbox" name="rating" value="1" id="rating-1">1</label>
+                  <label for="rating-2"><input type="checkbox" name="rating" value="2" id="rating-2">2</label>
+                  <label for="rating-3"><input type="checkbox" name="rating" value="3" id="rating-3">3</label>
+                  <label for="rating-4"><input type="checkbox" name="rating" value="4" id="rating-4">4</label>
+                  <label for="rating-5"><input type="checkbox" name="rating" value="5" id="rating-5">5</label>
+               </div>
+               <div id="word-count-content">
+                  <label for="word-count-slider">Word Count:</label>
+                  <input type="range" min="0" max="100000" value="50000" id="word-count-slider">
+                  <span id="word-count-value">50000</span>
+                  <script>
+                     document.getElementById('word-count-slider').addEventListener('input', function() {
+                        document.getElementById('word-count-value').textContent = this.value;
+                     });
+                  </script>
+               </div>
+            </div>
+         </div>
+         <div class="main-search-content">
+            <table id="search-results-table">
+               <tr>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Rating</th>
+                  <th>Kudos</th>
+               </tr>
+            </table>
+         </div>
+      </div>
+
    </body>
 </html>
