@@ -1,5 +1,6 @@
 import sqlite3
 
+DB_NAME = 'works.db'
 # Define global SQL strings
 # Database Setup
 CREATE_WORKS_TABLE = '''CREATE TABLE IF NOT EXISTS works (
@@ -64,7 +65,7 @@ CREATE_RATINGS_TABLE = '''CREATE TABLE IF NOT EXISTS ratings (
                 );'''
 
 # Initalize Reference Tables
-INITALIZE_RATINGS_TABLE = '''INSERT INTO ratings (rating, rating_symbol) VALUES
+INITALIZE_RATINGS_TABLE = '''INSERT OR IGNORE INTO ratings (rating, rating_symbol) VALUES
                     ('General Audiences', 'G'),
                     ('Teen And Up Audiences', 'T'),
                     ('Mature', 'M'),
@@ -94,14 +95,15 @@ SELECT_SERIES_ID_BY_NAME = "SELECT series_id FROM series WHERE series_name = ?"
 
 
 def create_connection():
-    conn = sqlite3.connect('works.db')
+    conn = sqlite3.connect(DB_NAME)
     return conn
 
 def create_database():
-    conn = sqlite3.connect('works.db')
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     
     # Create Tables
+    c.execute(CREATE_RATINGS_TABLE)
     c.execute(CREATE_WORKS_TABLE)
     c.execute(CREATE_AUTHORS_TABLE)
     c.execute(CREATE_TAGS_TABLE)
@@ -110,7 +112,6 @@ def create_database():
     c.execute(CREATE_WORK_FANDOM_RELATION_TABLE)  
     c.execute(CREATE_SERIES_TABLE)
     c.execute(CREATE_WORK_SERIES_RELATION_TABLE)
-    c.execute(CREATE_RATINGS_TABLE)
 
     # Initalize Table Date
     c.execute(INITALIZE_RATINGS_TABLE)
