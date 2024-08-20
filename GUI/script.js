@@ -157,6 +157,18 @@ async function fillRecentlyVisitedTable() {
   document.getElementById("recently-visited-table").innerHTML = table;
 }
 
+async function displayWordcloud(data_set) {
+  if (data_set == "Relationships"){
+    excludeShips = document.getElementById("ExcludeShipsCheckbox").checked;
+    console.log(excludeShips);
+    console.log(data_set);
+    await eel.display_wordcloud(data_set, excludeShips)();
+  }
+  else {
+    await eel.display_wordcloud(data_set)();
+  }
+}
+
 
 
 

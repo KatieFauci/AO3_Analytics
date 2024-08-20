@@ -66,6 +66,9 @@ def get_search_results(term, type):
     results = utils.build_search_table(utils.get_search_results(term, type))
     return results
 
+@eel.expose
+def display_wordcloud(data_type, exclude_ships=False):
+    metrics.create_wordcloud(data_type, exclude_ships)
 
 eel.start('main.html', size=(700, 700)) 
  # Start

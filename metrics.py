@@ -72,7 +72,6 @@ def count_specific_tag_occurrence(tag):
     return result[0] if result else 0
 
 
-
 def top_10_tags(tag_class=None):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
@@ -179,14 +178,12 @@ def get_relashionships(exclude_ships=False):
     finally:
         conn.close()
 
-
      # Build Results
     results = []
     for t in tag_data:
         percent = round((int(t[1])/get_work_count())*100, 2)
         results.append([t[0],t[1],f"{percent}%"])
 
-    print(results)
     return results
 
 def get_all_ships():
@@ -265,9 +262,23 @@ def get_top_5_recently_visited_works():
     finally:
         conn.close()
 
+
     
-def create_wordcloud(tag_counts):
-    wordcloud = WordCloud(width=1600, height=800, background_color='grey', min_font_size=10, max_font_size=200, colormap='Reds').generate_from_frequencies(tag_counts)
+def create_wordcloud(tag_set, exclude_ships):
+
+    if tag_set == 'Top10':
+        data = {item[0]: item[1] for item in top_10_tags()}
+    elif tag_set == 'Characters':
+        data = {item[0]: item[1] for item in get_tags('characters')}
+    elif tag_set == 'Freeform':
+        data = {item[0]: item[1] for item in get_tags('freeforms')}
+    elif tag_set == 'Relationships':
+        data = {item[0]: item[1] for item in get_relashionships(exclude_ships)}
+    elif tag_set == 'Ships':
+        data = {item[0]: item[1] for item in get_all_ships()}
+
+
+    wordcloud = WordCloud(width=1600, height=800, background_color='grey', min_font_size=10, max_font_size=200, colormap='Reds').generate_from_frequencies(data)
     plt.figure(figsize=(16, 8))
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis('off')
