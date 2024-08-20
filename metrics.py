@@ -11,12 +11,22 @@ class result:
 
 
 db_name = 'works.db'
+
+
+def get_work_count():
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+    c.execute("""
+    SELECT count(*) FROM works;          
+    """)
+    work_count = c.fetchall()
+    conn.close()
+    return int(work_count[0][0])
+
 '''
 Counts the number of times each tag in the database appears. 
 '''
 def count_tag_occurences(db_name, tag_class=None):
-    conn = sqlite3.connect(db_name)
-    c = conn.cursor()
 
     if tag_class:
         c.execute("""
@@ -45,7 +55,7 @@ def count_tag_occurences(db_name, tag_class=None):
 '''
 Counts the number of times a specified tag appears
 '''
-def count_specific_tag_occurrence(db_name, tag):
+def count_specific_tag_occurrence(tag):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
 
@@ -63,10 +73,9 @@ def count_specific_tag_occurrence(db_name, tag):
 
 
 
-def top_10_tags(db_name, tag_class=None):
+def top_10_tags(tag_class=None):
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
-    print(tag_class)
 
     if tag_class:
         c.execute("""
@@ -90,25 +99,122 @@ def top_10_tags(db_name, tag_class=None):
 
     tag_data = c.fetchall()
 
-    # Get total number of works
-    c.execute("""
-    SELECT count(*) FROM works;          
-    """)
-    work_count = c.fetchall()
 
     conn.close()
 
     # Build Results
     results = []
     for t in tag_data:
-        percent = round((int(t[1])/int(work_count[0][0]))*100, 2)
+        percent = round((int(t[1])/get_work_count())*100, 2)
         results.append([t[0],t[1],f"{percent}%"])
 
     return results
 
 
 
-def get_author_tags(db_name, author, tag_class=None):
+def get_tags(tag_class=None):
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor() 
+    print(f'GETTING <{tag_class}> TAGS')
+
+    try:
+        if tag_class:
+            c.execute("""
+                  SELECT tags.tag, COUNT(work_tags.work_id) as count
+                  FROM tags
+                  JOIN work_tags ON tags.id = work_tags.tag_id
+                  WHERE tags.tag_class = ?
+                  GROUP BY tags.tag
+                  ORDER BY count DESC;
+                  """, (tag_class,))
+        else:
+            c.execute("""
+                  SELECT tags.tag, COUNT(work_tags.work_id) as count
+                  FROM tags
+                  JOIN work_tags ON tags.id = work_tags.tag_id
+                  GROUP BY tags.tag
+                  ORDER BY count DESC;
+                  """)
+            
+        tag_data = c.fetchall()
+    finally:
+        conn.close()
+
+
+     # Build Results
+    results = []
+    for t in tag_data:
+        percent = round((int(t[1])/get_work_count())*100, 2)
+        results.append([t[0],t[1],f"{percent}%"])
+
+    return results
+
+def get_relashionships(exclude_ships=False):
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor() 
+    print(f'GETTING <relationships> TAGS')
+
+    try:
+        if exclude_ships:
+            c.execute("""
+                  SELECT tags.tag, COUNT(work_tags.work_id) as count
+                  FROM tags
+                  JOIN work_tags ON tags.id = work_tags.tag_id
+                  WHERE tags.tag_class = "relationships"
+                  AND tags.is_ship = 0
+                  GROUP BY tags.tag
+                  ORDER BY count DESC;
+                  """)
+        else:
+            c.execute("""
+                  SELECT tags.tag, COUNT(work_tags.work_id) as count
+                  FROM tags
+                  JOIN work_tags ON tags.id = work_tags.tag_id
+                  WHERE tags.tag_class = "relationships"
+                  GROUP BY tags.tag
+                  ORDER BY count DESC;
+                  """)
+            
+        tag_data = c.fetchall()
+    finally:
+        conn.close()
+
+
+     # Build Results
+    results = []
+    for t in tag_data:
+        percent = round((int(t[1])/get_work_count())*100, 2)
+        results.append([t[0],t[1],f"{percent}%"])
+
+    print(results)
+    return results
+
+def get_all_ships():
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
+
+    try:
+        c.execute('''
+            SELECT t.tag, COUNT(wt.tag_id) AS count
+            FROM tags AS t
+            JOIN work_tags AS wt ON t.id = wt.tag_id
+            WHERE t.is_ship = 1
+            GROUP BY t.tag
+            ORDER BY count DESC
+        ''')
+        tag_data = c.fetchall()
+    finally:
+       conn.close()
+
+    # Build Results
+    results = []
+    for t in tag_data:
+        percent = round((int(t[1])/get_work_count())*100, 2)
+        results.append([t[0],t[1],f"{percent}%"])
+
+    return results
+
+def get_author_tags(author, tag_class=None):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
     
@@ -139,30 +245,6 @@ def get_author_tags(db_name, author, tag_class=None):
     
     conn.close()
     return author_tags
-
-
-def get_ship_tags_with_count():
-    connection = sqlite3.connect(db_name)
-    cursor = connection.cursor()
-
-    # Query to select ship tags along with their counts
-    query = '''
-    SELECT t.tag, COUNT(wt.tag_id) AS count
-    FROM tags AS t
-    JOIN work_tags AS wt ON t.id = wt.tag_id
-    WHERE t.is_ship = 1
-    GROUP BY t.tag
-    ORDER BY count DESC
-    '''
-    
-    try:
-       cursor.execute(query)
-       result = cursor.fetchall()
-       ship_tags_with_count = [(tag[0], tag[1]) for tag in result]
-       return ship_tags_with_count
-    finally:
-       connection.close()
-
 
 def get_top_5_recently_visited_works():
     conn = sqlite3.connect(db_name)

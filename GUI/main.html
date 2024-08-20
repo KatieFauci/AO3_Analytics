@@ -45,9 +45,10 @@
       <div id = "Tags" class = "tabcontent" onload = "openTab(event,'Top10','Tags', 'defaultTagTab')">
          <!-- Tag Tab Links --> 
          <div class = "tab"> 
-            <button class = "tablinks" onclick = "fillTagsTable('tags-table', null);openTab(event,'Top10','Tags', 'defaultTagTab');" id = "defaultSubTab" class = "active">Top 10 Tags</button>
+            <button class = "tablinks" onclick = "fillTop10Table('tags-table', null);openTab(event,'Top10','Tags', 'defaultTagTab');" id = "defaultSubTab" class = "active">Top 10 Tags</button>
             <button class = "tablinks" onclick = "fillTagsTable('characters-table','characters');openTab(event,'Characters','Tags')">Characters</button> 
             <button class = "tablinks" onclick = "fillTagsTable('freeform-table','freeforms');openTab(event, 'Freeform','Tags')">Freeform</button>
+            <button class = "tablinks" onclick = "fillRelashionshipTable('relationships-table','relationships');openTab(event, 'Relationships','Tags')">Relationships</button>
          </div>
   
          <!-- Tag Tab content --> 
@@ -59,6 +60,12 @@
          </div>
          <div id = "Freeform" class = "tabcontent">
             <table id = "freeform-table"></table>
+         </div>
+         <div id = "Relationships" class = "tabcontent">
+            <label>
+               <input type="checkbox" id = "ExcludeShipsCheckbox" name="option1" value="Option 1" onclick="fillRelashionshipTable('relationships-table','relationships')"> Exclude Ships
+             </label>
+            <table id = "relationships-table"></table>
          </div>
       </div>
  

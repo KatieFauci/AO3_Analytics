@@ -386,14 +386,14 @@ def build_stats_table():
     return html_table
 
 
-def build_tags_table(tag_class=None):
-    results = metrics.top_10_tags(db_name, tag_class)
+def build_table_of_tags(input_list, tag_class=None):
+    #results = metrics.top_10_tags(db_name, tag_class)
     html_table = """
     <table>
         <tbody>
     """
     count = 1;
-    for r in results:
+    for r in input_list:
         html_table += f"<tr><td>{count}</td><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td></tr>"
         count += 1
 

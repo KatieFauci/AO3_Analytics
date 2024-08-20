@@ -29,8 +29,18 @@ def fill_stats_table():
 @eel.expose
 def fill_tags_table(tag_class=None):
     if tag_class == 'None':
-        return utils.build_tags_table()
-    return utils.build_tags_table(tag_class)
+        return utils.build_table_of_tags(metrics.get_tags(tag_class))
+    return utils.build_table_of_tags(metrics.get_tags(tag_class))
+
+@eel.expose
+def fill_relashionship_table(exclude_ships=False):
+    return utils.build_table_of_tags(metrics.get_relashionships(exclude_ships))
+
+@eel.expose
+def fill_top_10_table(tag_class=None):
+    if tag_class == 'None':
+        return utils.build_table_of_tags(metrics.top_10_tags(tag_class))
+    return utils.build_table_of_tags(metrics.top_10_tags(tag_class))
     
 # Get Character List
 @eel.expose
@@ -39,7 +49,7 @@ def fill_character_list():
 
 @eel.expose
 def fill_ships_table():
-    return utils.build_ship_table(metrics.get_ship_tags_with_count())
+    return utils.build_table_of_tags(metrics.get_all_ships())
 
 @eel.expose
 def fill_recently_visited_table():

@@ -119,6 +119,27 @@ async function fillTagsTable(thisTable, tagClass) {
   document.getElementById(thisTable).innerHTML = table;
 }
 
+async function fillRelashionshipTable(thisTable, tagClass) {
+  var table = "empty table";
+  excludeShips = document.getElementById("ExcludeShipsCheckbox").checked;
+  table = await eel.fill_relashionship_table(excludeShips)();
+  document.getElementById(thisTable).innerHTML = table;
+}
+
+
+async function fillTop10Table(thisTable, tagClass) {
+  var table = "empty table";
+  console.log(table);
+  if (!tagClass) {
+    table = await eel.fill_top_10_table()();
+    console.log(table);
+  }
+  else{
+    table = await eel.fill_top_10_table(tagClass)();
+  }
+  document.getElementById(thisTable).innerHTML = table;
+}
+
 async function fillCharacterList() {
   // Build Table string
   const table = await eel.fill_character_list()();
