@@ -53,22 +53,22 @@
   
          <!-- Tag Tab content --> 
          <div id = "Top10" class = "tabcontent">
-            <button onclick = "displayWordcloud('Top10')">Generate Wordcloud</button>
+            <button onclick = "displayWordcloud('Top10')" class="my-button">Generate Wordcloud</button>
             <table id = "tags-table"></table>
          </div>
          <div id = "Characters" class = "tabcontent"> 
-            <button onclick = "displayWordcloud('Characters')">Generate Wordcloud</button>
+            <button onclick = "displayWordcloud('Characters')" class="my-button">Generate Wordcloud</button>
             <table id = "characters-table"></table>
          </div>
          <div id = "Freeform" class = "tabcontent">
-            <button onclick = "displayWordcloud('Freeform')">Generate Wordcloud</button>
+            <button onclick = "displayWordcloud('Freeform')" class="my-button">Generate Wordcloud</button>
             <table id = "freeform-table"></table>
          </div>
          <div id = "Relationships" class = "tabcontent">
             <label>
                <input type="checkbox" id = "ExcludeShipsCheckbox" name="option1" value="Option 1" onclick="fillRelashionshipTable('relationships-table','relationships')"> Exclude Ships
              </label>
-             <button onclick = "displayWordcloud('Relationships')">Generate Wordcloud</button>
+             <button onclick = "displayWordcloud('Relationships')" class="my-button">Generate Wordcloud</button>
             <table id = "relationships-table"></table>
          </div>
       </div>
@@ -82,7 +82,7 @@
   
         <!-- Ship Tab content -->  
          <div id = "AllShips" class = "tabcontent">
-            <button onclick = "displayWordcloud('Ships')">Generate Wordcloud</button>
+            <button onclick = "displayWordcloud('Ships')" class="my-button">Generate Wordcloud</button>
             <table id = "ship-table"></table>
          </div>
          <div id = "Top10Ships" class = "tabcontent"> this is the top 10 tab </div>      
@@ -95,48 +95,50 @@
       
       <!-- Search Tab Content -->
       <div id="Search" class="tabcontent">
-         <div class="sidebar">
-            <div class="search-input">
-               <input type="text" id="search-input" placeholder="Search...">
-               <button type="button" id="search-btn" onclick="searchClicked()">Search</button>
-            </div>
-            <div class="search-by-options">
-               <h3>Search by Options</h3>
-               <label for="title-search"><input type="radio" name="search-type" value="title" id="search-type-title">Title</label>
-               <label for="author-search"><input type="radio" name="search-type" value="author" id="search-type-author">Author</label>
-               <label for="tag-search"><input type="radio" name="search-type" value="tags" id="search-type-tags" checked>Tags</label>
-            </div>
-            <div class="filter-options">
-               <h3>Filter Options</h3>
-               <div id="rating-content">
-                  <h4>Rating:</h4>
-                  <label for="rating-1"><input type="checkbox" name="rating" value="1" id="rating-1">1</label>
-                  <label for="rating-2"><input type="checkbox" name="rating" value="2" id="rating-2">2</label>
-                  <label for="rating-3"><input type="checkbox" name="rating" value="3" id="rating-3">3</label>
-                  <label for="rating-4"><input type="checkbox" name="rating" value="4" id="rating-4">4</label>
-                  <label for="rating-5"><input type="checkbox" name="rating" value="5" id="rating-5">5</label>
+         <div class="search-container">
+            <div class="sidebar">
+               <div class="search-input">
+                  <input type="text" id="search-text-input" placeholder="Search...">
+                  <button type="button" id="search-btn" class="my-button" onclick="searchClicked()">Search</button>
                </div>
-               <div id="word-count-content">
-                  <label for="word-count-slider">Word Count:</label>
-                  <input type="range" min="0" max="100000" value="50000" id="word-count-slider">
-                  <span id="word-count-value">50000</span>
-                  <script>
-                     document.getElementById('word-count-slider').addEventListener('input', function() {
-                        document.getElementById('word-count-value').textContent = this.value;
-                     });
-                  </script>
+               <div class="search-by-options">
+                  <h3>Search by Options</h3>
+                  <label for="title-search"><input type="radio" name="search-type" value="title" id="search-type-title">Title</label>
+                  <label for="author-search"><input type="radio" name="search-type" value="author" id="search-type-author">Author</label>
+                  <label for="tag-search"><input type="radio" name="search-type" value="tags" id="search-type-tags" checked>Tags</label>
+               </div>
+               <div class="filter-options">
+                  <h3>Filter Options</h3>
+                  <div id="rating-content">
+                     <h4>Rating:</h4>
+                     <label for="rating-1"><input type="checkbox" name="rating" value="1" id="rating-1">1</label>
+                     <label for="rating-2"><input type="checkbox" name="rating" value="2" id="rating-2">2</label>
+                     <label for="rating-3"><input type="checkbox" name="rating" value="3" id="rating-3">3</label>
+                     <label for="rating-4"><input type="checkbox" name="rating" value="4" id="rating-4">4</label>
+                     <label for="rating-5"><input type="checkbox" name="rating" value="5" id="rating-5">5</label>
+                  </div>
+                  <div id="word-count-content">
+                     <label for="word-count-slider">Word Count:</label>
+                     <input type="range" min="0" max="100000" value="50000" id="word-count-slider">
+                     <span id="word-count-value">50000</span>
+                     <script>
+                        document.getElementById('word-count-slider').addEventListener('input', function() {
+                           document.getElementById('word-count-value').textContent = this.value;
+                        });
+                     </script>
+                  </div>
                </div>
             </div>
-         </div>
-         <div class="main-search-content">
-            <table id="search-results-table">
-               <tr>
-                  <th>Title</th>
-                  <th>Author</th>
-                  <th>Rating</th>
-                  <th>Kudos</th>
-               </tr>
-            </table>
+            <div class="main-search-content">
+               <table id="search-results-table">
+                  <tr>
+                     <th>Title</th>
+                     <th>Author</th>
+                     <th>Rating</th>
+                     <th>Kudos</th>
+                  </tr>
+               </table>
+            </div>
          </div>
       </div>
 

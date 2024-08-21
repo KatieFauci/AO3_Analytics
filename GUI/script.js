@@ -93,7 +93,7 @@ async function fillUserStats() {
 
 async function searchClicked(){
   console.log("Search Initiated");
-  var searchTerm = document.getElementById("search-input").value;
+  var searchTerm = document.getElementById("search-text-input").value;
   var searchType = document.querySelector('input[name="search-type"]:checked').value;
   console.log(getSearchInfo())
   const table = await eel.get_search_results(searchTerm, searchType)();

@@ -70,5 +70,5 @@ def get_search_results(term, type):
 def display_wordcloud(data_type, exclude_ships=False):
     metrics.create_wordcloud(data_type, exclude_ships)
 
-eel.start('main.html', size=(700, 700)) 
+eel.start('main.html', size=(800, 800)) 
  # Start

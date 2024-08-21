@@ -3,7 +3,6 @@
     height: 300px;
     width: 600px;
     overflow: auto;
-    float: center;
     position: relative;
     margin-left: 10px;
     padding: 10px;
@@ -99,26 +98,41 @@ table td:first-child {
 }
 
 
-/*
-**
-** Search Page styles
-*/
-/* Sidebar styles */
-.sidebar {
-  float: left; /* to position the sidebar next to the other content */
-  width: 25%; /* Adjust the width as needed */
-  background-color: #f0f0f0;
-  padding: 10px;
-  height: 100vh; /* added to make the sidebar full height */
+/******************************/
+/*Search Page styles
+/******************************/
+
+.search-container {
+  display: grid;
+  grid-template-columns: 25% 75%; /* Sidebar takes 1/4 width, content takes 3/4 */
+  gap: 10px;
 }
+
+.sidebar, .main-search-content {
+  padding: 10px;
+}
+
+/******************************/
+/* Search Content Styles 
+/******************************/
   
-/* Main search content styles */
 .main-search-content {
-  margin-left: 25%; /* Margin should match the sidebar width */
-  width: 75%; /* Set a fixed width for the main content */
   overflow-x: auto; /* Enable horizontal scrolling if necessary */
 }
-  
+
+/**********************/
+/* Search Sidebar Styles 
+/*********************/
+
+.sidebar {
+  background-color: #f0f0f0;
+}
+
+#search-text-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .search-by-options,
 .filter-options {
   margin-bottom: 20px;
@@ -147,4 +161,35 @@ table td:first-child {
 
 #word-count-value {
   margin-left: 10px;
+}
+
+
+
+/*****************************/
+/* Standard Component Styles
+/****************************/
+.my-button {
+  background-color: #92110C; /* Primary button color */
+  color: white; /* Text color */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Rounded corners */
+  padding: 5px 10px; /* Vertical and horizontal padding */
+  margin: 5px 5px 5px 0px;
+  font-size: 14px; /* Text size */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+  pointer-events: auto;
+}
+
+.my-button:hover {
+  background-color: #a11611; /* Darker shade on hover */
+}
+
+.my-button:active {
+  background-color: #92110C; /* Even darker shade when pressed */
+  transform: scale(0.98); /* Slightly decrease size to simulate pressing */
+}
+
+.my-button:focus {
+  box-shadow: 0 0 0 1px rgba(139, 141, 143, 0.603); /* Custom focus outline */
 }
