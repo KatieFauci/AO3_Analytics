@@ -23,6 +23,8 @@ to run against history page `python ao3_scrape.py`
   - [X] get top 10 trope tag
   - [X] get top 10 relashionship tags
 - [ ] Display analytics in charts
+- [X] Add Wordcloud Generation
+- [ ] add recs page/features
 - [ ] pull the number of times visiting a story into data 
 - [ ] Pull if part of collection or series/multiple series
 - [X] Handle bad login
