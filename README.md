@@ -24,14 +24,15 @@ to run against history page `python ao3_scrape.py`
   - [X] get top 10 relashionship tags
 - [ ] Display analytics in charts
 - [X] Add Wordcloud Generation
-- [ ] add recs page/features
+- [ ] add recs page/favorites
 - [ ] pull the number of times visiting a story into data 
-- [ ] Pull if part of collection or series/multiple series
+- [X] Pull if part of collection or series/multiple series
 - [X] Handle bad login
 - [X] Get Rating
 - [ ] Add fandom to character and relashionship tags, freeforms dont need it
 - [ ] Add fandom to works table
-- [ ] Bookbinding Resources
+- [X] Add wordcloud
+- Bookbinding Resources
   - [ ] Keep track of a to-bind list
   - [ ] Keep track of which works have been bound
   - [ ] Utility to store typest metrics based on pdf
