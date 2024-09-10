@@ -3,6 +3,7 @@ import ao3_scrape
 import utils
 import metrics
 import sqlite3
+import DB_Access
 
 # Set web files folder
 eel.init('GUI')
@@ -69,6 +70,14 @@ def get_search_results(term, type):
 @eel.expose
 def display_wordcloud(data_type, exclude_ships=False):
     metrics.create_wordcloud(data_type, exclude_ships)
+
+@eel.expose
+def toggle_favorite_ui(work_id):
+    # Toggle the favorite status
+    DB_Access.toggle_favorite(work_id)
+    # Now, retrieve the new status to return it
+    is_favorite = DB_Access.is_work_favorite(work_id)
+    return {"is_favorite": is_favorite, "message": "Favorite toggled"}
 
 eel.start('main.html', size=(800, 800)) 
  # Start

@@ -31,3 +31,8 @@ to run against history page `python ao3_scrape.py`
 - [X] Get Rating
 - [ ] Add fandom to character and relashionship tags, freeforms dont need it
 - [ ] Add fandom to works table
+- [ ] Bookbinding Resources
+  - [ ] Keep track of a to-bind list
+  - [ ] Keep track of which works have been bound
+  - [ ] Utility to store typest metrics based on pdf
+  - [ ] Utility to estimate size of spine

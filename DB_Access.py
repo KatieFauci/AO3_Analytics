@@ -22,6 +22,8 @@ CREATE_WORKS_TABLE = '''CREATE TABLE IF NOT EXISTS works (
                     is_in_series BOOLEAN DEFAULT 0,
                     num_collections INTEGER DEFAULT 0,
                     collections_link TEXT,
+                    rec BOOLEAN DEFAULT 0,
+                    is_favorite BOOLEAN DEFAULT 0,
                     FOREIGN KEY(author_id) REFERENCES authors(id)
 )'''
 CREATE_AUTHORS_TABLE = '''CREATE TABLE IF NOT EXISTS authors (id INTEGER PRIMARY KEY, author TEXT UNIQUE)'''
@@ -91,8 +93,11 @@ SELECT_WORK_TAG_RELATION = "SELECT * FROM work_tags WHERE work_id = ? AND tag_id
 SELECT_FANDOM_ID_BY_FANDOM = "SELECT id FROM fandoms WHERE fandom = ?"
 SELECT_WORK_FANDOM_RELATION = "SELECT * FROM work_fandoms WHERE work_id = ? AND fandom_id = ?"
 SELECT_SERIES_ID_BY_NAME = "SELECT series_id FROM series WHERE series_name = ?"
+SELECT_FAVORITES = "SELECT * FROM works WHERE is_favorite = 1"
+IS_FAVORITE = "SELECT is_favorite FROM works WHERE id = ?"
 
-
+# Updates
+TOGGLE_FAVORITE = "UPDATE works SET is_favorite = NOT is_favorite WHERE id = ?"
 
 def create_connection():
     conn = sqlite3.connect(DB_NAME)
@@ -266,5 +271,28 @@ def search_works_by_tag(database_file, tag):
         print(f"Error executing SQL query: {e}")
         conn.close()
         return []
+    
+def toggle_favorite(work_id):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute(TOGGLE_FAVORITE, (work_id,))
+    conn.commit()
+    conn.close()
 
+def is_work_favorite(work_id):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute(IS_FAVORITE, (work_id,))
+    result = c.fetchone()
+    conn.close()
+    # If result is None, the work_id might not exist in the database, 
+    # or there could be an issue. Here we assume it's not a favorite if not found.
+    return result[0] if result else False
 
+def get_favorites():
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute(SELECT_FAVORITES)
+    favorites = c.fetchall()
+    conn.close()
+    return favorites

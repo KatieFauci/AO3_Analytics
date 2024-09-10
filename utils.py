@@ -438,21 +438,27 @@ def build_recently_visited_table(top_5_works):
 
 def build_search_table(results):
     html_table = '''
-    <table border="1">
+    <table border="1" id="search-results-table">
         <tr>
             <th>Title</th>
             <th>Author</th>
             <th>Rating</th>
             <th>Kudos</th>
+            <th>Favorite</th>
         </tr>
     '''
     for r in results:
+        # Assuming the ID is the first column after your modifications, adjust if necessary
+        work_id = r[0]
+        is_favorite = r[-1] if len(r) > 4 else 0  # Assuming the last column indicates if it's a favorite
+        favorite_icon = '&#9733;' if is_favorite else '&#9734;'  # Gold star for favorite, grey star otherwise
         html_table += f'''
-        <tr>
-            <td>{r[0]}</td>
-            <td>{r[1]}</td>
+        <tr data-work-id="{work_id}">
+            <td>{r[1]}</td> <!-- Assuming title is now at index 1 -->
             <td>{r[2]}</td>
             <td>{r[3]}</td>
+            <td>{r[4]}</td>
+            <td><span class="favorite-toggle" onclick="toggleFavoriteFromUI({work_id})">{favorite_icon}</td>
         </tr>
         '''
     html_table += "</table>"
@@ -566,16 +572,13 @@ def get_works_by_author_b(author_name):
 
 
 
+# Modify get_search_results to include is_favorite status
 def get_search_results(search_term, search_type):
     conn = sqlite3.connect('works.db') 
     cursor = conn.cursor()
-    # Create the SQL query with the provided tag
     query = """
         SELECT
-            w.title,
-            a.author,
-            w.rating,
-            w.kudos
+            w.id, w.title, a.author, w.rating, w.kudos, w.is_favorite
         FROM
             works AS w
         JOIN
@@ -590,12 +593,10 @@ def get_search_results(search_term, search_type):
         WHERE
             t.tag LIKE ?
         GROUP BY
-            w.title, a.author, w.rating, w.word_count, w.date_published, w.kudos
+            w.id, w.title, a.author, w.rating, w.kudos, w.is_favorite
         ORDER BY
             w.kudos DESC;
     """
-
-    # Execute the query with the provided tag and fetch the results
     try:
         cursor.execute(query, (f'%{search_term}%',))
         results = cursor.fetchall()

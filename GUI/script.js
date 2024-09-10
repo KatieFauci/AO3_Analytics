@@ -91,15 +91,60 @@ async function fillUserStats() {
   document.getElementById("stats-table").innerHTML = table;
 };
 
-async function searchClicked(){
-  console.log("Search Initiated");
+async function searchClicked() {
   var searchTerm = document.getElementById("search-text-input").value;
   var searchType = document.querySelector('input[name="search-type"]:checked').value;
-  console.log(getSearchInfo())
-  const table = await eel.get_search_results(searchTerm, searchType)();
-  document.getElementById("search-results-table").innerHTML = table;
-};
+  const results = await eel.get_search_results(searchTerm, searchType)();
+  document.getElementById("search-results-table").innerHTML = results;
 
+  // After displaying results, update favorite status for each item
+  // Assuming you have a function or way to get all favorites or their status
+  const favoriteWorks = await eel.get_all_favorite_works()(); // Implement this function if not already available
+  favoriteWorks.forEach(work => {
+      let favoriteElement = document.querySelector(`[data-work-id="${work.id}"] .favorite-toggle`);
+      if (favoriteElement) {
+          favoriteElement.textContent = '★';
+          favoriteElement.classList.add('is-favorite');
+      }
+  });
+}
+
+function updateFavoriteUI(workId, isFavorite) {
+  // Find the element responsible for displaying favorite status for workId
+  // This might need adjustment based on how your HTML is structured
+  console.log("in update");
+  let favoriteButton = document.querySelector(`[data-work-id="${workId}"]`);
+  if (favoriteButton) {
+      if (isFavorite) {
+          favoriteButton.classList.add('is-favorite'); // Add a class to change style or icon
+          favoriteButton.textContent = '★'; // Star filled, for example
+      } else {
+          favoriteButton.classList.remove('is-favorite');
+          favoriteButton.textContent = '☆'; // Star outline
+      }
+  }
+}
+
+async function toggleFavoriteFromUI(workId) {
+  eel.toggle_favorite_ui(workId)(function(response) {
+    console.log("toggle to: " + response.is_favorite);
+      if ('is_favorite' in response) {
+          let favoriteElement = document.querySelector(`[data-work-id="${workId}"] .favorite-toggle`);
+          console.log(favoriteElement);
+          if (favoriteElement) {
+              if (response.is_favorite) {
+                  favoriteElement.textContent = '★';
+                  favoriteElement.classList.add('is-favorite');
+              } else {
+                  favoriteElement.textContent = '☆';
+                  favoriteElement.classList.remove('is-favorite');
+              }
+          }
+      } else {
+          console.error("Unexpected response format from toggle_favorite_ui");
+      }
+  });
+}
 
 //--------------------------------------------------
 //
