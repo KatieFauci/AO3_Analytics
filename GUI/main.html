@@ -18,7 +18,7 @@
          <button class = "tablinks" onclick = "openTab(event, 'Ships','Main')">Ships</button>
          <button class = "tablinks" onclick = "openTab(event, 'Search','Main')">Search</button>
          <button class = "tablinks" onclick = "openTab(event, 'Recently Visited','Main');fillRecentlyVisitedTable()">Recently Visited</button>
-         <button class = "tablinks" onclick = "openTab(event, 'My Recs','Main')">My Recs</button>
+         <button class = "tablinks" onclick = "openTab(event, 'My Favorites','Main')">My Favorites</button>
       </div>
 
     <!-- Tab content --> 
@@ -136,17 +136,15 @@
                </div>
             </div>
             <div class="main-search-content">
-               <table id="search-results-table">
-                  <tr>
-                     <th>Title</th>
-                     <th>Author</th>
-                     <th>Rating</th>
-                     <th>Kudos</th>
-                     <th>Favorite</th>
-                 </tr>
-               </table>
+               <table id="search-results-table"></table>
             </div>
          </div>
+      </div>
+
+
+      <!-- Favorites Tab Content -->  
+      <div id = "My Favorites" class = "tabcontent"> 
+         <table id = "favorites-table"></table>
       </div>
 
    </body>

@@ -10,11 +10,11 @@ class result:
         self.tag_percent = 0
 
 
-db_name = 'works.db'
+DB_NAME = 'works.db'
 
 
 def get_work_count():
-    conn = sqlite3.connect(db_name)
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("""
     SELECT count(*) FROM works;          
@@ -26,8 +26,9 @@ def get_work_count():
 '''
 Counts the number of times each tag in the database appears. 
 '''
-def count_tag_occurences(db_name, tag_class=None):
-
+def count_tag_occurences(tag_class=None):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
     if tag_class:
         c.execute("""
                   SELECT tags.tag, COUNT(work_tags.work_id) as count
@@ -56,7 +57,7 @@ def count_tag_occurences(db_name, tag_class=None):
 Counts the number of times a specified tag appears
 '''
 def count_specific_tag_occurrence(tag):
-    conn = sqlite3.connect(db_name)
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
 
     c.execute("""
@@ -73,7 +74,7 @@ def count_specific_tag_occurrence(tag):
 
 
 def top_10_tags(tag_class=None):
-    conn = sqlite3.connect(db_name)
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
 
     if tag_class:
@@ -112,7 +113,7 @@ def top_10_tags(tag_class=None):
 
 
 def get_tags(tag_class=None):
-    conn = sqlite3.connect(db_name)
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor() 
     print(f'GETTING <{tag_class}> TAGS')
 
@@ -149,7 +150,7 @@ def get_tags(tag_class=None):
     return results
 
 def get_relashionships(exclude_ships=False):
-    conn = sqlite3.connect(db_name)
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor() 
     print(f'GETTING <relationships> TAGS')
 
@@ -187,7 +188,7 @@ def get_relashionships(exclude_ships=False):
     return results
 
 def get_all_ships():
-    conn = sqlite3.connect(db_name)
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
 
     try:
@@ -212,7 +213,7 @@ def get_all_ships():
     return results
 
 def get_author_tags(author, tag_class=None):
-    conn = sqlite3.connect(db_name)
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     
     if tag_class:
@@ -243,12 +244,12 @@ def get_author_tags(author, tag_class=None):
     conn.close()
     return author_tags
 
-def get_top_5_recently_visited_works():
-    conn = sqlite3.connect(db_name)
+def get_recently_visited_works():
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
     query = '''
-    SELECT w.title, a.author, w.rating, w.word_count
+    SELECT w.id, w.title, a.author, w.rating, w.kudos, w.is_favorite
     FROM works AS w
     JOIN authors AS a ON w.author_id = a.id
     ORDER BY w.last_visited DESC

@@ -54,7 +54,8 @@ def fill_ships_table():
 
 @eel.expose
 def fill_recently_visited_table():
-    return utils.build_recently_visited_table(metrics.get_top_5_recently_visited_works())
+    return utils.build_table_of_works(metrics.get_recently_visited_works())
+
 
 # Function to connect to the SQLite database
 def connect_db():
@@ -64,7 +65,7 @@ def connect_db():
 @eel.expose
 def get_search_results(term, type):
     print(f'{term}:{type}')
-    results = utils.build_search_table(utils.get_search_results(term, type))
+    results = utils.build_table_of_works(utils.get_search_results(term, type))
     return results
 
 @eel.expose

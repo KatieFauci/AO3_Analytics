@@ -202,6 +202,11 @@ async function fillRecentlyVisitedTable() {
   document.getElementById("recently-visited-table").innerHTML = table;
 }
 
+async function fillFavoritesTable() {
+  const table = await eel.fill_favorites_table()();
+  document.getElementById("favorites-table").innerHTML = table;
+}
+
 async function displayWordcloud(data_set) {
   if (data_set == "Relationships"){
     excludeShips = document.getElementById("ExcludeShipsCheckbox").checked;

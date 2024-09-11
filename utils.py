@@ -11,7 +11,7 @@ import json
 import sqlite3
 import metrics
 
-db_name = 'works.db'
+DB_NAME = 'works.db'
 
 
 def print_work_data(work):
@@ -387,7 +387,7 @@ def build_stats_table():
 
 
 def build_table_of_tags(input_list, tag_class=None):
-    #results = metrics.top_10_tags(db_name, tag_class)
+    #results = metrics.top_10_tags(DB_NAME, tag_class)
     html_table = """
     <table>
         <tbody>
@@ -412,33 +412,9 @@ def build_ship_table(input_list):
     return html_string.format(''.join(temp_list))
 
 
-
-def build_recently_visited_table(top_5_works):
-    html_table = '''
-    <table border="1">
-       <tr>
-           <th>Title</th>
-           <th>Author</th>
-           <th>Rating</th>
-           <th>Word Count</th>
-       </tr>
-    '''
-    print(top_5_works)
-    for work in top_5_works:
-        html_table += f'''
-        <tr>
-            <td>{work[0]}</td>
-            <td>{work[1]}</td>
-            <td>{work[2]}</td>
-            <td>{work[3]}</td>
-        </tr>
-        '''
-    html_table += "</table>"
-    return html_table
-
-def build_search_table(results):
-    html_table = '''
-    <table border="1" id="search-results-table">
+def build_table_of_works(results):
+    table = '''
+    <table border="1" id="table-of-works">
         <tr>
             <th>Title</th>
             <th>Author</th>
@@ -452,17 +428,23 @@ def build_search_table(results):
         work_id = r[0]
         is_favorite = r[-1] if len(r) > 4 else 0  # Assuming the last column indicates if it's a favorite
         favorite_icon = '&#9733;' if is_favorite else '&#9734;'  # Gold star for favorite, grey star otherwise
-        html_table += f'''
+        table += f'''
         <tr data-work-id="{work_id}">
             <td>{r[1]}</td> <!-- Assuming title is now at index 1 -->
             <td>{r[2]}</td>
             <td>{r[3]}</td>
             <td>{r[4]}</td>
-            <td><span class="favorite-toggle" onclick="toggleFavoriteFromUI({work_id})">{favorite_icon}</td>
-        </tr>
         '''
-    html_table += "</table>"
-    return html_table
+        if is_favorite:
+            table += f'''<td><span class="favorite-toggle is-favorite" onclick="toggleFavoriteFromUI({work_id})">{favorite_icon}</td>'''
+        else:
+           table += f'''<td><span class="favorite-toggle" onclick="toggleFavoriteFromUI({work_id})">{favorite_icon}</td>''' 
+        
+    table += "</tr></table>"
+    return table
+
+
+
 
 ############################################
 ## OTHER
@@ -474,8 +456,8 @@ def print_out(out):
 
 
 
-def get_tag_classes(db_name):
-    conn = sqlite3.connect(db_name)
+def get_tag_classes():
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     
     cursor.execute("SELECT DISTINCT tag_class FROM tags")
@@ -488,8 +470,8 @@ def get_tag_classes(db_name):
 '''
 Search Database
 '''
-def search_database_a(db_name, keyword, tables=None):
-    conn = sqlite3.connect(db_name)
+def search_database_a(keyword, tables=None):
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
 
     if tables is None:
