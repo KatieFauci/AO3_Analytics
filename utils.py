@@ -4,6 +4,7 @@ import eel
 import json
 import sqlite3
 from Models.Work import Work
+import DB_Access
 
 from env import DB_NAME
 
@@ -38,83 +39,6 @@ def store_user_data(user):
 def get_page_count(word_count):
     return floor(word_count/300)
 
-# --------------------------------------------------------
-#  JSON UTILS
-# --------------------------------------------------------
-def get_tag_stats_from_json(start_date = 0, end_date = datetime.now):
-    
-    f = open('Scrape_Results./all_works.json')
-    works = json.load(f)
-
-    tag_stats = [];
-
-    # Get subset of works based on date if not getting whole history
-    if start_date != 0:
-        #get all history
-        # Open json file
-        print('Getting history subset')
-        # Iterate through the tags
-    
-    for work in works:
-        for tag in work['Tags']:
-
-            if any(this_tag['Tag'] == tag['Tag'] for this_tag in tag_stats):
-                for t in tag_stats:
-                    if t['Tag'] == tag['Tag']:
-                        t['Count'] = int(t.get('Count')) + 1
-            else: 
-                this_tag = {
-                    'Tag': tag['Tag'],
-                    'Class': tag['TagClass'],
-                    'Count': 1,
-                }
-                tag_stats.append(this_tag)
-                
-    json_object = json.dumps(tag_stats, indent=4)
-
-    with open("Scrape_Results/user_tag_stats.json", "w") as outfile:
-        outfile.write(json_object)
-
-
-def get_top_ten_tags():
-    f = open('Scrape_Results./user_tag_stats.json')
-    tags = json.load(f)
-
-    #Sort tags
-    tags_by_count = sorted(tags, key=lambda d: d['Count'], reverse=True)
-    relationships_tags = []
-    characters_tags = []
-    freeforms_tags = []
-    # Sort tags by class
-    for tag in tags_by_count:
-        if tag['Class'] == 'relationships':
-            relationships_tags.append(tag)
-        if tag['Class'] == 'characters':
-            characters_tags.append(tag)
-        if tag['Class'] == 'freeforms':
-            freeforms_tags.append(tag)
-        
-    #Print first 10 tags
-    i = 0
-    while i < 10:
-        print(freeforms_tags[i])
-        i+=1
-
-def get_characters():
-        f = open('Scrape_Results./user_tag_stats.json')
-        tags = json.load(f)
-
-        # Filter for "character" tags
-        character_tags = [item["Tag"] for item in data if item["Class"] == "characters"]
-
-        # Create HTML list
-        html = "<ul>\n"
-        for tag in character_tags:
-            html += f"  <li>{tag}</li>\n"
-        html += "</ul>"
-
-        return(html)
-
 
 ############################################
 ## BUILD HTML FORMAT
@@ -148,18 +72,6 @@ def build_table_of_tags(input_list, tag_class=None):
     html_table += """</tbody></table>"""
     return html_table
 
-
-def build_ship_table(input_list):
- 
-    html_string = '''<table border="1">{}</table>'''
-    row_format = '''<tr><td>{}</td><td>{}</td><td>{}</td></tr>'''
-    temp_list = []
-    
-    for index, item in enumerate(input_list, start=1):
-        temp_list.append(row_format.format(index, item[0], item[1]))      
-    return html_string.format(''.join(temp_list))
-
-
 def build_table_of_works(results):
     table = '''
     <table border="1" id="table-of-works">
@@ -189,27 +101,6 @@ def build_table_of_works(results):
         
     table += "</tr></table>"
     return table
-
-
-
-
-############################################
-## OTHER
-############################################
-
-def print_out(out):
-    print(out)
-    eel.printToOutput(out)
-
-def get_tag_classes():
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    
-    cursor.execute("SELECT DISTINCT tag_class FROM tags")
-    tag_classes = [row[0] for row in cursor.fetchall()]
-    
-    conn.close()
-    return tag_classes
 
 
 '''
@@ -267,8 +158,7 @@ def get_search_results(search_term, search_type):
     return results
 
 
-
-
+'''
 def search_database(search_type, search_term, rating=None, word_count=None):
     conn = sqlite3.connect(DB_NAME) 
     c = conn.cursor()
@@ -313,10 +203,15 @@ def search_database(search_type, search_term, rating=None, word_count=None):
     conn.close()
     
     return data
+'''
 
 
 
+############################################
+## OTHER
+############################################
 
-
-
+def print_out(out):
+    print(out)
+    eel.printToOutput(out)
 

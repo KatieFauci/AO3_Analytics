@@ -128,7 +128,7 @@ def create_connection():
     return conn
 
 def create_database():
-    conn = sqlite3.connect(DB_NAME)
+    conn = create_connection()
     c = conn.cursor()
     
     # Create Tables
@@ -168,8 +168,13 @@ def add_author(author_name, conn):
             return author_id
     else:
         return author_id[0]
+    
+    conn.close()
 
-def add_work(data, author_id, c):
+def add_work(data, author_id):
+    conn = create_connection()
+    c = conn.cursor()
+
     # Insert into works table
     c.execute(SELECT_WORK_AUTHOR_TITLE_RATING, 
               (data.title, author_id, data.rating))
@@ -180,10 +185,13 @@ def add_work(data, author_id, c):
                   (data.title, author_id, data.rating, data.word_count, data.last_visited, data.date_published, data.language, data.completed_chapters, data.total_chapters, data.completed, data.comments, data.kudos, data.bookmarks, data.hits))
         work_id = c.lastrowid
         return work_id
+    conn.close()
 
     return work_id[0]
 
-def add_work_tags(tags, work_id, c):
+def add_work_tags(tags, work_id):
+    conn = create_connection()
+    c = conn.cursor()
     # Insert into tags table and story_tags table
     for tag in tags:
         c.execute(SELECT_TAG_WITH_CLASS, (tag['Tag'], tag['TagClass']))
@@ -200,8 +208,11 @@ def add_work_tags(tags, work_id, c):
         c.execute(SELECT_WORK_TAG_RELATION, (work_id, tag_id))
         if c.fetchone() is None:
             c.execute(INSERT_WORK_TAG_RELATION, (work_id, tag_id))
+    conn.close()
 
-def add_work_fandoms(fandoms, work_id, c):
+def add_work_fandoms(fandoms, work_id):
+    conn = create_connection()
+    c = conn.cursor()
     # Insert into fandoms table and work_fandoms table
     for fandom in fandoms:
         c.execute(SELECT_FANDOM_ID_BY_FANDOM, (fandom,))
@@ -216,6 +227,7 @@ def add_work_fandoms(fandoms, work_id, c):
         c.execute(SELECT_WORK_FANDOM_RELATION, (work_id, fandom_id))
         if c.fetchone() is None:
             c.execute(INSERT_WORK_FANDOM_RELATION, (work_id, fandom_id))
+    conn.close()
 
 def insert_series(series_name, series_link, work_id):
     conn = create_connection()
@@ -239,28 +251,24 @@ def insert_series(series_name, series_link, work_id):
 
 
 def insert_work_into_database(data):
+    author_id = add_author(data.author)
+    work_id = add_work(data, author_id)
+    add_work_tags(data.tags, work_id)
+    add_work_fandoms(data.fandoms, work_id)
+    
+    
+def toggle_favorite(work_id):
     conn = create_connection()
     c = conn.cursor()
 
-    author_id = add_author(data.author, c)
-    work_id = add_work(data, author_id, c)
-    add_work_tags(data.tags, work_id, c)
-    add_work_fandoms(data.fandoms, work_id, c)
-    
-    conn.commit()
-    conn.close()
-
-    
-def toggle_favorite(work_id):
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
     c.execute(TOGGLE_FAVORITE, (work_id,))
     conn.commit()
     conn.close()
 
 def is_work_favorite(work_id):
-    conn = sqlite3.connect(DB_NAME)
+    conn = create_connection()
     c = conn.cursor()
+
     c.execute(IS_FAVORITE, (work_id,))
     result = c.fetchone()
     conn.close()
@@ -269,8 +277,9 @@ def is_work_favorite(work_id):
     return result[0] if result else False
 
 def get_favorites():
-    conn = sqlite3.connect(DB_NAME)
+    conn = create_connection()
     c = conn.cursor()
+
     c.execute(SELECT_FAVORITES)
     favorites = c.fetchall()
     conn.close()
