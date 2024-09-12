@@ -196,13 +196,13 @@ def calculate_user_stats():
 def create_wordcloud(tag_set, exclude_ships):
 
     if tag_set == 'Characters':
-        data = {item[0]: item[1] for item in get_tags('characters')}
+        data = {tag.tag: tag.count for tag in get_tags('characters')}
     elif tag_set == 'Freeform':
-        data = {item[0]: item[1] for item in get_tags('freeforms')}
+        data = {tag.tag: tag.count for tag in get_tags('freeforms')}
     elif tag_set == 'Relationships':
-        data = {item[0]: item[1] for item in get_relashionships(exclude_ships)}
+        data = {tag.tag: tag.count for tag in get_relashionships(exclude_ships)}
     elif tag_set == 'Ships':
-        data = {item[0]: item[1] for item in get_all_ships()}
+        data = {tag.tag: tag.count for tag in get_all_ships()}
 
 
     wordcloud = WordCloud(width=1600, height=800, background_color='grey', min_font_size=10, max_font_size=200, colormap='Reds').generate_from_frequencies(data)
