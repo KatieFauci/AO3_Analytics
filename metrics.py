@@ -2,17 +2,12 @@ import sqlite3
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from Models.Work import Work
+from Models.Tag import Tag
+from Models.UserData import UserData
 from DB_Access import create_connection
 import utils
+from sql_statements import *
 
-WORK_VALUES =  '''           
-                w.id, w.title, 
-                a.author, 
-                w.rating, 
-                w.kudos, 
-                w.is_favorite, 
-                w.word_count
-                '''
 
 
 class result:
@@ -24,104 +19,14 @@ class result:
 def get_work_count():
     conn = create_connection()
     c = conn.cursor()
-    c.execute("""
-    SELECT count(*) FROM works;          
-    """)
+    c.execute(SELECT_WORK_COUNT)
     work_count = c.fetchall()
     conn.close()
     return int(work_count[0][0])
 
-'''
-Counts the number of times each tag in the database appears. 
-'''
-def count_tag_occurences(tag_class=None):
-    conn = create_connection()
-    c = conn.cursor()
-    if tag_class:
-        c.execute("""
-                  SELECT tags.tag, COUNT(work_tags.work_id) as count
-                  FROM tags
-                  LEFT JOIN work_tags ON tags.id = work_tags.tag_id
-                  WHERE tags.tag_class = ?
-                  GROUP BY tags.tag
-                  ORDER BY count DESC;
-                  """, (tag_class,))
-    else:
-        c.execute("""
-                  SELECT tags.tag, COUNT(work_tags.work_id) as count
-                  FROM tags
-                  LEFT JOIN work_tags ON tags.id = work_tags.tag_id
-                  GROUP BY tags.tag
-                  ORDER BY count DESC;
-                  """)
-
-    result = c.fetchall()
-    conn.close()
-
-    return {tag: count for tag, count in result}
-
-
-'''
-Counts the number of times a specified tag appears
-'''
-def count_specific_tag_occurrence(tag):
-    conn = create_connection()
-    c = conn.cursor()
-
-    c.execute("""
-              SELECT COUNT(DISTINCT work_tags.work_id) as count
-              FROM tags
-              JOIN work_tags ON tags.id = work_tags.tag_id
-              WHERE tags.tag = ?;
-              """, (tag,))
-
-    result = c.fetchone()
-    conn.close()
-
-    return result[0] if result else 0
-
-
-def top_10_tags(tag_class=None):
-    conn = create_connection()
-    c = conn.cursor()
-
-    if tag_class:
-        c.execute("""
-                  SELECT tags.tag, COUNT(work_tags.work_id) as count
-                  FROM tags
-                  JOIN work_tags ON tags.id = work_tags.tag_id
-                  WHERE tags.tag_class = ?
-                  GROUP BY tags.tag
-                  ORDER BY count DESC
-                  LIMIT 10;
-                  """, (tag_class,))
-    else:
-        c.execute("""
-                  SELECT tags.tag, COUNT(work_tags.work_id) as count
-                  FROM tags
-                  JOIN work_tags ON tags.id = work_tags.tag_id
-                  GROUP BY tags.tag
-                  ORDER BY count DESC
-                  LIMIT 10;
-                  """)
-
-    tag_data = c.fetchall()
-
-
-    conn.close()
-
-    # Build Results
-    results = []
-    for t in tag_data:
-        percent = round((int(t[1])/get_work_count())*100, 2)
-        results.append([t[0],t[1],f"{percent}%"])
-
-    return results
-
-
 
 def get_tags(tag_class=None):
-    conn = create_connection()
+    conn = create_connection()  # Replace with your database file
     c = conn.cursor()
     print(f'GETTING <{tag_class}> TAGS')
 
@@ -143,19 +48,13 @@ def get_tags(tag_class=None):
                   GROUP BY tags.tag
                   ORDER BY count DESC;
                   """)
-            
-        tag_data = c.fetchall()
+
+        tags = c.fetchall()
+        return utils.build_tag_results(tags)
+
     finally:
         conn.close()
 
-
-     # Build Results
-    results = []
-    for t in tag_data:
-        percent = round((int(t[1])/get_work_count())*100, 2)
-        results.append([t[0],t[1],f"{percent}%"])
-
-    return results
 
 def get_relashionships(exclude_ships=False):
     conn = create_connection()
@@ -183,17 +82,11 @@ def get_relashionships(exclude_ships=False):
                   ORDER BY count DESC;
                   """)
             
-        tag_data = c.fetchall()
+        tags = c.fetchall()
     finally:
         conn.close()
 
-     # Build Results
-    results = []
-    for t in tag_data:
-        percent = round((int(t[1])/get_work_count())*100, 2)
-        results.append([t[0],t[1],f"{percent}%"])
-
-    return results
+    return utils.build_tag_results(tags)
 
 def get_all_ships():
     conn = create_connection()
@@ -208,17 +101,11 @@ def get_all_ships():
             GROUP BY t.tag
             ORDER BY count DESC
         ''')
-        tag_data = c.fetchall()
+        tags = c.fetchall()
     finally:
        conn.close()
 
-    # Build Results
-    results = []
-    for t in tag_data:
-        percent = round((int(t[1])/get_work_count())*100, 2)
-        results.append([t[0],t[1],f"{percent}%"])
-
-    return results
+    return utils.build_tag_results(tags)
 
 def get_author_tags(author, tag_class=None):
     conn = create_connection()
@@ -289,11 +176,26 @@ def get_favorites():
 
     return utils.build_work_results(works)
 
+def calculate_user_stats():
+    conn = create_connection()
+    c = conn.cursor()
+
+    try:
+        c.execute(SUM_WORD_COUNT)
+        words_read = c.fetchone()[0] if result else 0
+    finally:
+        conn.close()
+
+    this_user = UserData()
+    this_user.story_count = get_work_count()
+    this_user.total_words = words_read
+    this_user.page_count = utils.get_page_count(words_read)
+
+    return this_user
+
 def create_wordcloud(tag_set, exclude_ships):
 
-    if tag_set == 'Top10':
-        data = {item[0]: item[1] for item in top_10_tags()}
-    elif tag_set == 'Characters':
+    if tag_set == 'Characters':
         data = {item[0]: item[1] for item in get_tags('characters')}
     elif tag_set == 'Freeform':
         data = {item[0]: item[1] for item in get_tags('freeforms')}
@@ -309,9 +211,6 @@ def create_wordcloud(tag_set, exclude_ships):
     plt.axis('off')
     plt.show()
 
-
-
-    
 
 '''
 Search Database

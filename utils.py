@@ -2,8 +2,9 @@ from datetime import datetime
 from math import floor
 import eel
 import json
-import sqlite3
 from Models.Work import Work
+from Models.Tag import Tag
+import metrics
 
 
 
@@ -35,21 +36,28 @@ def store_user_data(user):
         outfile.write(json_object)
 
 def get_page_count(word_count):
-    return floor(word_count/300)
-
+    print(f'word count is {word_count}')
+    return int(floor(word_count/300))
 
 def build_work_results(works):
     results = []
-    for w in works:
+    for work_id, title, author, rating, kudos, is_favorite, word_count in works:
         this_work = Work()
-        this_work.id = w[0]
-        this_work.title = w[1]
-        this_work.author = w[2]
-        this_work.rating = w[3]
-        this_work.kudos = w[4]
-        this_work.is_favorite = w[5]
-        this_work.word_count = w[6]
+        this_work.id = work_id
+        this_work.title = title
+        this_work.author = author
+        this_work.rating = rating
+        this_work.kudos = kudos
+        this_work.is_favorite = is_favorite
+        this_work.word_count = word_count
         results.append(this_work)
+
+    return results
+
+def build_tag_results(tags):
+    results = []
+    for tag, count in tags:
+        results.append(Tag(tag, count))
     return results
 
 ############################################
@@ -69,20 +77,24 @@ def build_stats_table():
         """
     return html_table
 
-
-def build_table_of_tags(input_list, tag_class=None):
-    #results = metrics.top_10_tags(DB_NAME, tag_class)
+def build_table_of_tags(tags):
     html_table = """
     <table>
         <tbody>
     """
-    count = 1;
-    for r in input_list:
-        html_table += f"<tr><td>{count}</td><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td></tr>"
+    work_count = metrics.get_work_count()
+    count = 1
+    for tag in tags:
+        percent = round((tag.count/work_count)*100, 2)
+        html_table += f"<tr><td>{count}</td><td>{tag.tag}</td><td>{tag.count}</td><td>{percent}%</td></tr>"
         count += 1
 
-    html_table += """</tbody></table>"""
+    html_table += """
+        </tbody>
+    </table>
+    """
     return html_table
+
 
 def build_table_of_works(results):
     table = '''
@@ -114,54 +126,6 @@ def build_table_of_works(results):
     table += "</tr></table>"
     return table
 
-
-
-'''
-def search_database(search_type, search_term, rating=None, word_count=None):
-    conn = sqlite3.connect(DB_NAME) 
-    c = conn.cursor()
-
-    query = """
-    SELECT DISTINCT w.title, a.author, w.rating, w.word_count, w.date_published
-    FROM works w
-    JOIN authors a ON w.author_id = a.id
-    """
-    where_clause = []
-    args = []
-    
-    if search_type == 'title':
-        where_clause.append("w.title LIKE ?")
-        args.append(f'%{search_term}%')
-    elif search_type == 'author':
-        where_clause.append("a.author LIKE ?")
-        args.append(f'%{search_term}%')        
-    elif search_type == 'tag':
-        query += """
-                JOIN work_tags wt ON wt.work_id = w.id
-                JOIN tags t ON t.id = wt.tag_id
-                """
-        where_clause.append("t.tag LIKE ?")
-        args.append(f'%{search_term}%')
-        
-    if rating:
-        where_clause.append("w.rating = ?")
-        args.append(rating)
-    
-    if word_count:
-        where_clause.append("w.word_count > ?")
-        args.append(word_count)
-    
-    if where_clause:
-        query += " WHERE " + " AND ".join(where_clause)
-    
-    query += ";"
-    
-    c.execute(query, args)
-    data = c.fetchall()
-    conn.close()
-    
-    return data
-'''
 
 
 

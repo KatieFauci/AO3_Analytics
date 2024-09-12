@@ -5,6 +5,7 @@ import eel
 import tinydb
 import json
 import DB_Access
+import metrics
 from Models.Work import Work
 from Models.UserData import UserData
 
@@ -82,8 +83,8 @@ def scrape(USERNAME, PASSWORD):
         # Get User Stats
         this_user.page_count = utils.get_page_count(this_user.total_words);
 
-        utils.print_user_data(this_user)
-        utils.store_user_data(this_user)
+        utils.print_user_data(metrics.calculate_user_stats())
+        utils.store_user_data(metrics.calculate_user_stats())
 
         json_object = json.dumps(dict_collection, indent=4)
 
