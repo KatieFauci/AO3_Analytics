@@ -148,7 +148,7 @@ def create_database():
     conn.commit()
     conn.close()
 
-def add_author(author_name, conn):
+def add_author(author_name):
     conn = create_connection()
     c = conn.cursor()
     

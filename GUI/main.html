@@ -18,7 +18,7 @@
          <button class = "tablinks" onclick = "openTab(event, 'Ships','Main')">Ships</button>
          <button class = "tablinks" onclick = "openTab(event, 'Search','Main')">Search</button>
          <button class = "tablinks" onclick = "openTab(event, 'Recently Visited','Main');fillRecentlyVisitedTable()">Recently Visited</button>
-         <button class = "tablinks" onclick = "openTab(event, 'My Favorites','Main')">My Favorites</button>
+         <button class = "tablinks" onclick = "openTab(event, 'My Favorites','Main');fillFavoritesTable()">My Favorites</button>
       </div>
 
     <!-- Tab content --> 
@@ -89,16 +89,6 @@
          <div id = "Top10Ships" class = "tabcontent"> this is the top 10 tab </div>      
       </div>
       
-      <!-- Recently Visited Tab Content -->  
-      <div id = "Recently Visited" class = "tabcontent"> 
-         <table id = "recently-visited-table"></table>
-      </div>
-
-      <!-- Recently Visited Tab Content -->  
-      <div id = "My Recs" class = "tabcontent"> 
-         <table id = "recs-table"></table>
-      </div>
-      
       <!-- Search Tab Content -->
       <div id="Search" class="tabcontent">
          <div class="search-container">
@@ -141,6 +131,10 @@
          </div>
       </div>
 
+      <!-- Recently Visited Tab Content -->  
+      <div id = "Recently Visited" class = "tabcontent"> 
+         <table id = "recently-visited-table"></table>
+      </div>
 
       <!-- Favorites Tab Content -->  
       <div id = "My Favorites" class = "tabcontent"> 

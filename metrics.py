@@ -1,10 +1,19 @@
 import sqlite3
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-from bs4 import BeautifulSoup
 from Models.Work import Work
+from DB_Access import create_connection
+import utils
 
-from env import DB_NAME
+WORK_VALUES =  '''           
+                w.id, w.title, 
+                a.author, 
+                w.rating, 
+                w.kudos, 
+                w.is_favorite, 
+                w.word_count
+                '''
+
 
 class result:
     def __init__(self, tag, tag_count, tag_percent):
@@ -13,7 +22,7 @@ class result:
         self.tag_percent = 0
 
 def get_work_count():
-    conn = sqlite3.connect(DB_NAME)
+    conn = create_connection()
     c = conn.cursor()
     c.execute("""
     SELECT count(*) FROM works;          
@@ -26,7 +35,7 @@ def get_work_count():
 Counts the number of times each tag in the database appears. 
 '''
 def count_tag_occurences(tag_class=None):
-    conn = sqlite3.connect(DB_NAME)
+    conn = create_connection()
     c = conn.cursor()
     if tag_class:
         c.execute("""
@@ -56,7 +65,7 @@ def count_tag_occurences(tag_class=None):
 Counts the number of times a specified tag appears
 '''
 def count_specific_tag_occurrence(tag):
-    conn = sqlite3.connect(DB_NAME)
+    conn = create_connection()
     c = conn.cursor()
 
     c.execute("""
@@ -73,7 +82,7 @@ def count_specific_tag_occurrence(tag):
 
 
 def top_10_tags(tag_class=None):
-    conn = sqlite3.connect(DB_NAME)
+    conn = create_connection()
     c = conn.cursor()
 
     if tag_class:
@@ -112,8 +121,8 @@ def top_10_tags(tag_class=None):
 
 
 def get_tags(tag_class=None):
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor() 
+    conn = create_connection()
+    c = conn.cursor()
     print(f'GETTING <{tag_class}> TAGS')
 
     try:
@@ -149,8 +158,8 @@ def get_tags(tag_class=None):
     return results
 
 def get_relashionships(exclude_ships=False):
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor() 
+    conn = create_connection()
+    c = conn.cursor()
     print(f'GETTING <relationships> TAGS')
 
     try:
@@ -187,7 +196,7 @@ def get_relashionships(exclude_ships=False):
     return results
 
 def get_all_ships():
-    conn = sqlite3.connect(DB_NAME)
+    conn = create_connection()
     c = conn.cursor()
 
     try:
@@ -212,11 +221,11 @@ def get_all_ships():
     return results
 
 def get_author_tags(author, tag_class=None):
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
+    conn = create_connection()
+    c = conn.cursor()
     
     if tag_class:
-        cursor.execute("""
+        c.execute("""
             SELECT t.tag, wt.work_id, COUNT(wt.tag_id) AS count
             FROM works w
             JOIN authors a ON w.author_id = a.id
@@ -227,7 +236,7 @@ def get_author_tags(author, tag_class=None):
             ORDER BY count DESC
         """, (author, tag_class))
     else:
-        cursor.execute("""
+        c.execute("""
             SELECT t.tag, wt.work_id, COUNT(wt.tag_id) AS count
             FROM works w
             JOIN authors a ON w.author_id = a.id
@@ -238,50 +247,48 @@ def get_author_tags(author, tag_class=None):
             ORDER BY count DESC
         """, (author,))
     
-    author_tags = cursor.fetchall()
+    author_tags = c.fetchall()
     
     conn.close()
     return author_tags
 
 def get_recently_visited_works():
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
+    conn = create_connection()
+    c = conn.cursor()
 
-    query = '''
-     SELECT
-            w.id, w.title, 
-            a.author, 
-            w.rating, 
-            w.kudos, 
-            w.is_favorite, 
-            w.word_count
+    query = f'''
+    SELECT {WORK_VALUES}
     FROM works AS w
     JOIN authors AS a ON w.author_id = a.id
     ORDER BY w.last_visited DESC
     LIMIT 5
     '''
     try:
-        cursor.execute(query)
-        works = cursor.fetchall()
+        c.execute(query)
+        works = c.fetchall()
     finally:
         conn.close()
 
-    results = []
-    for w in works:
-        this_work = Work()
-        this_work.id = w[0]
-        this_work.title = w[1]
-        this_work.author = w[2]
-        this_work.rating = w[3]
-        this_work.kudos = w[4]
-        this_work.is_favorite = w[5]
-        this_work.word_count = w[6]
-        results.append(this_work)
+    return utils.build_work_results(works)
 
-    return results
+def get_favorites():
+    conn = create_connection()
+    c = conn.cursor()
 
+    query = f'''
+    SELECT {WORK_VALUES}
+    FROM works AS w
+    JOIN authors AS a ON w.author_id = a.id
+    WHERE w.is_favorite = true
+    '''
+    try:
+        c.execute(query)
+        works = c.fetchall()
+    finally:
+        conn.close()
 
-    
+    return utils.build_work_results(works)
+
 def create_wordcloud(tag_set, exclude_ships):
 
     if tag_set == 'Top10':
@@ -301,3 +308,44 @@ def create_wordcloud(tag_set, exclude_ships):
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis('off')
     plt.show()
+
+
+
+    
+
+'''
+Search Database
+'''
+def get_search_results(search_term, search_type):
+    conn = create_connection()
+    c = conn.cursor()
+    query = f"""
+        SELECT {WORK_VALUES}
+        FROM
+            works AS w
+        JOIN
+            authors AS a 
+            ON w.author_id = a.id
+        JOIN
+            work_tags AS wt
+            ON w.id = wt.work_id
+        JOIN
+            tags AS t
+            ON wt.tag_id = t.id
+        WHERE
+            t.tag LIKE ?
+        GROUP BY
+            w.id, w.title, a.author, w.rating, w.kudos, w.is_favorite
+        ORDER BY
+            w.kudos DESC;
+    """
+    try:
+        c.execute(query, (f'%{search_term}%',))
+        works = c.fetchall()
+        conn.close()
+    except sqlite3.Error as e:
+        print(f"Error executing SQL query: {e}")
+        conn.close()
+        return []
+    
+    return utils.build_work_results(works)

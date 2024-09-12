@@ -57,9 +57,13 @@ def fill_recently_visited_table():
     return utils.build_table_of_works(metrics.get_recently_visited_works())
 
 @eel.expose
+def fill_favorites_table():
+    return utils.build_table_of_works(metrics.get_favorites())
+
+@eel.expose
 def get_search_results(term, type):
     print(f'{term}:{type}')
-    results = utils.build_table_of_works(utils.get_search_results(term, type))
+    results = utils.build_table_of_works(metrics.get_search_results(term, type))
     return results
 
 @eel.expose

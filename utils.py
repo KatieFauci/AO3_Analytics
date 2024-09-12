@@ -4,9 +4,7 @@ import eel
 import json
 import sqlite3
 from Models.Work import Work
-import DB_Access
 
-from env import DB_NAME
 
 
 def print_work_data(work):
@@ -39,6 +37,20 @@ def store_user_data(user):
 def get_page_count(word_count):
     return floor(word_count/300)
 
+
+def build_work_results(works):
+    results = []
+    for w in works:
+        this_work = Work()
+        this_work.id = w[0]
+        this_work.title = w[1]
+        this_work.author = w[2]
+        this_work.rating = w[3]
+        this_work.kudos = w[4]
+        this_work.is_favorite = w[5]
+        this_work.word_count = w[6]
+        results.append(this_work)
+    return results
 
 ############################################
 ## BUILD HTML FORMAT
@@ -102,60 +114,6 @@ def build_table_of_works(results):
     table += "</tr></table>"
     return table
 
-
-'''
-Search Database
-'''
-def get_search_results(search_term, search_type):
-    conn = sqlite3.connect(DB_NAME) 
-    cursor = conn.cursor()
-    query = """
-        SELECT
-            w.id, w.title, 
-            a.author, 
-            w.rating, 
-            w.kudos, 
-            w.is_favorite, 
-            w.word_count
-        FROM
-            works AS w
-        JOIN
-            authors AS a 
-            ON w.author_id = a.id
-        JOIN
-            work_tags AS wt
-            ON w.id = wt.work_id
-        JOIN
-            tags AS t
-            ON wt.tag_id = t.id
-        WHERE
-            t.tag LIKE ?
-        GROUP BY
-            w.id, w.title, a.author, w.rating, w.kudos, w.is_favorite
-        ORDER BY
-            w.kudos DESC;
-    """
-    try:
-        cursor.execute(query, (f'%{search_term}%',))
-        works = cursor.fetchall()
-        conn.close()
-    except sqlite3.Error as e:
-        print(f"Error executing SQL query: {e}")
-        conn.close()
-        return []
-    results = []
-    for w in works:
-        this_work = Work()
-        this_work.id = w[0]
-        this_work.title = w[1]
-        this_work.author = w[2]
-        this_work.rating = w[3]
-        this_work.kudos = w[4]
-        this_work.is_favorite = w[5]
-        this_work.word_count = w[6]
-        results.append(this_work)
-
-    return results
 
 
 '''
