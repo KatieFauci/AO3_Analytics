@@ -2,16 +2,15 @@ import sqlite3
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
+from Models.Work import Work
+
+from env import DB_NAME
 
 class result:
     def __init__(self, tag, tag_count, tag_percent):
         self.tag = ""
         self.tag_count = 0
         self.tag_percent = 0
-
-
-DB_NAME = 'works.db'
-
 
 def get_work_count():
     conn = sqlite3.connect(DB_NAME)
@@ -249,19 +248,37 @@ def get_recently_visited_works():
     cursor = conn.cursor()
 
     query = '''
-    SELECT w.id, w.title, a.author, w.rating, w.kudos, w.is_favorite
+     SELECT
+            w.id, w.title, 
+            a.author, 
+            w.rating, 
+            w.kudos, 
+            w.is_favorite, 
+            w.word_count
     FROM works AS w
     JOIN authors AS a ON w.author_id = a.id
     ORDER BY w.last_visited DESC
     LIMIT 5
     '''
-    
     try:
         cursor.execute(query)
-        results = cursor.fetchall()
-        return results
+        works = cursor.fetchall()
     finally:
         conn.close()
+
+    results = []
+    for w in works:
+        this_work = Work()
+        this_work.id = w[0]
+        this_work.title = w[1]
+        this_work.author = w[2]
+        this_work.rating = w[3]
+        this_work.kudos = w[4]
+        this_work.is_favorite = w[5]
+        this_work.word_count = w[6]
+        results.append(this_work)
+
+    return results
 
 
     

@@ -1,15 +1,11 @@
-from tkinter import ROUND
-from urllib import response
-import bs4
 from datetime import datetime
 from math import floor
-from bs4 import BeautifulSoup as bs
 import eel
 import json
 import sqlite3
 from Models.Work import Work
 
-DB_NAME = 'works.db'
+from env import DB_NAME
 
 
 def print_work_data(work):

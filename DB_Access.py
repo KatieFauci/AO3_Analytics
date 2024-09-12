@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_NAME = 'works.db'
+from env import DB_NAME
 # Define global SQL strings
 # Database Setup
 CREATE_WORKS_TABLE = '''CREATE TABLE IF NOT EXISTS works (
