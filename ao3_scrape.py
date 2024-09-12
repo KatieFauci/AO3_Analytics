@@ -1,5 +1,6 @@
 import bs4
 import utils
+import scrape_utils
 import eel
 import tinydb
 import json
@@ -18,7 +19,7 @@ def scrape(USERNAME, PASSWORD):
     eel.printToOutput("PASSWORD: " + PASSWORD)
     page_num = 1
     this_user = UserData()
-    response_pages = utils.call_history_v2(USERNAME, PASSWORD)
+    response_pages = scrape_utils.get_history(USERNAME, PASSWORD)
     dict_collection = []
 
     DB_Access.create_database()
@@ -44,45 +45,33 @@ def scrape(USERNAME, PASSWORD):
             for work in soup.find_all('li', attrs={"role": "article"}):
                 try:
                     this_work = Work()
-                    this_work.title = utils.get_title(work)
-                    this_work.author = utils.get_author(work)
-                    this_work.rating = utils.get_rating(work)
-                    this_work.date_published = utils.get_date_published(work)
-                    this_work.word_count = utils.get_work_word_count(work)
+                    this_work.title = scrape_utils.get_title(work)
+                    this_work.author = scrape_utils.get_author(work)
+                    this_work.rating = scrape_utils.get_rating(work)
+                    this_work.date_published = scrape_utils.get_date_published(work)
+                    this_work.word_count = scrape_utils.get_work_word_count(work)
                     this_user.total_words = this_user.total_words + this_work.word_count
-                    this_work.last_visited = utils.get_last_visited_date(work)
-                    this_work.tags = utils.get_work_tags(work)
-                    this_work.language = utils.get_language(work)
-                    this_work.completed_chapters, this_work.total_chapters = utils.get_chapters(work)
-                    this_work.completed = utils.is_completed(work)
-                    this_work.comments = utils.get_comments(work)
-                    this_work.kudos = utils.get_kudos(work)
-                    this_work.bookmarks = utils.get_bookmarks(work)
-                    this_work.hits = utils.get_hits(work)
-                    this_work.fandoms = utils.get_fandoms(work)
-
-                    
+                    this_work.last_visited = scrape_utils.get_last_visited_date(work)
+                    this_work.tags = scrape_utils.get_work_tags(work)
+                    this_work.language = scrape_utils.get_language(work)
+                    this_work.completed_chapters, this_work.total_chapters = scrape_utils.get_chapters(work)
+                    this_work.completed = scrape_utils.is_completed(work)
+                    this_work.comments = scrape_utils.get_comments(work)
+                    this_work.kudos = scrape_utils.get_kudos(work)
+                    this_work.bookmarks = scrape_utils.get_bookmarks(work)
+                    this_work.hits = scrape_utils.get_hits(work)
+                    this_work.fandoms = scrape_utils.get_fandoms(work)
 
                     # Add Work To Users Works
                     this_user.works.append(this_work)
 
                     # Inc Story Count
                     this_user.story_count = this_user.story_count + 1
-                    '''
-                    # Store info as JSON
-                    dictionary = {
-                        "Title": this_work.title,
-                        "Author": this_work.author,
-                        "Rating": this_work.rating,
-                        "WordCount": this_work.word_count, 
-                        "LastVisited": str(this_work.last_visited), 
-                        "Tags": this_work.tags    
-                    }
-                    dict_collection.append(dictionary)
-                    '''
                     DB_Access.insert_work_into_database(this_work)
+
                 except Exception as e:
                     eel.printToOutput(f'ERROR getting work on page {page_num} >>>> ERROR: {e}')
+            
             page_num = page_num + 1
 
         # Get User Stats
@@ -96,8 +85,6 @@ def scrape(USERNAME, PASSWORD):
 
         with open("Scrape_Results/all_works.json", "w") as outfile:
             outfile.write(json_object)
-
-        
 
         utils.get_tag_stats_from_json()
 

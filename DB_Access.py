@@ -99,6 +99,30 @@ IS_FAVORITE = "SELECT is_favorite FROM works WHERE id = ?"
 # Updates
 TOGGLE_FAVORITE = "UPDATE works SET is_favorite = NOT is_favorite WHERE id = ?"
 
+
+# Database Searches
+SEARCH_BY_TAG = """
+        SELECT
+            w.id, w.title, a.author, w.rating, w.kudos, w.is_favorite, w.word_count
+        FROM
+            works AS w
+        JOIN
+            authors AS a 
+            ON w.author_id = a.id
+        JOIN
+            work_tags AS wt
+            ON w.id = wt.work_id
+        JOIN
+            tags AS t
+            ON wt.tag_id = t.id
+        WHERE
+            t.tag LIKE ?
+        GROUP BY
+            w.id, w.title, a.author, w.rating, w.kudos, w.is_favorite
+        ORDER BY
+            w.kudos DESC;
+    """
+
 def create_connection():
     conn = sqlite3.connect(DB_NAME)
     return conn
