@@ -14,8 +14,8 @@
       <div class = "tab">
          <button class = "tablinks" onclick = "openTab(event, 'Scrape','Main')" id = "defaultOpen">Scrape</button>
          <button class = "tablinks" onclick = "openTab(event, 'Stats','Main');fillUserStats()">Stats</button>
-         <button class = "tablinks" onclick = "openTab(event, 'Tags','Main')">Tags</button>
-         <button class = "tablinks" onclick = "openTab(event, 'Ships','Main')">Ships</button>
+         <button class = "tablinks" onclick = "openTab(event, 'Tags','Main');activateDefaultTab('default_tag_tab')">Tags</button>
+         <button class = "tablinks" onclick = "openTab(event, 'Ships','Main');activateDefaultTab('default_ship_tab')">Ships</button>
          <button class = "tablinks" onclick = "openTab(event, 'Search','Main')">Search</button>
          <button class = "tablinks" onclick = "openTab(event, 'Recently Visited','Main');fillRecentlyVisitedTable()">Recently Visited</button>
          <button class = "tablinks" onclick = "openTab(event, 'My Favorites','Main');fillFavoritesTable()">My Favorites</button>
@@ -43,19 +43,14 @@
          <table id="stats-table"></table>
       </div>
  
-      <div id = "Tags" class = "tabcontent" onload = "openTab(event,'Top10','Tags', 'defaultTagTab')">
+      <div id = "Tags" class = "tabcontent" onload = "openTab(event,'Characters','Tags', 'defaultTagTab')">
          <!-- Tag Tab Links --> 
          <div class = "tab"> 
-            <button class = "tablinks" onclick = "fillTagsTable('characters-table','characters');openTab(event,'Characters','Tags')">Characters</button> 
+            <button class = "tablinks" id = "default_tag_tab" onclick = "fillTagsTable('characters-table','characters');openTab(event,'Characters','Tags')">Characters</button> 
             <button class = "tablinks" onclick = "fillTagsTable('freeform-table','freeforms');openTab(event, 'Freeform','Tags')">Freeform</button>
             <button class = "tablinks" onclick = "fillRelashionshipTable('relationships-table','relationships');openTab(event, 'Relationships','Tags')">Relationships</button>
          </div>
-  
-         <!-- Tag Tab content --> 
-         <div id = "Top10" class = "tabcontent">
-            <button onclick = "displayWordcloud('Top10')" class="my-button">Generate Wordcloud</button>
-            <table id = "tags-table"></table>
-         </div>
+
          <div id = "Characters" class = "tabcontent"> 
             <button onclick = "displayWordcloud('Characters')" class="my-button">Generate Wordcloud</button>
             <table id = "characters-table"></table>
@@ -76,7 +71,7 @@
       <div id = "Ships" class = "tabcontent" onload="openTab(event,'AllShips','Ships')">  
          <!-- Ship Tab Links -->      
          <div class = "tab"> 
-            <button class = "tablinks" onclick = "fillShipsTable();openTab(event,'AllShips','Ships');" id = "defaultShipsTab">All Ships</button>
+            <button class = "tablinks" id = "default_ship_tab" onclick = "fillShipsTable();openTab(event,'AllShips','Ships');" id = "defaultShipsTab">All Ships</button>
          </div>  
   
         <!-- Ship Tab content -->  

@@ -61,6 +61,11 @@ function openTab(evt, tabName, parentTabId) {
 
 }
 
+function activateDefaultTab(tabId) {
+  var tab = document.getElementById(tabId);
+  tab.click();
+}
+
 
 //--------------------------------------------------
 //
