@@ -10,6 +10,7 @@ import eel
 import json
 import sqlite3
 import metrics
+from Models.Work import Work
 
 DB_NAME = 'works.db'
 
@@ -423,22 +424,19 @@ def build_table_of_works(results):
             <th>Favorite</th>
         </tr>
     '''
-    for r in results:
-        # Assuming the ID is the first column after your modifications, adjust if necessary
-        work_id = r[0]
-        is_favorite = r[-1] if len(r) > 4 else 0  # Assuming the last column indicates if it's a favorite
-        favorite_icon = '&#9733;' if is_favorite else '&#9734;'  # Gold star for favorite, grey star otherwise
+    for r in results:  
+        favorite_icon = '&#9733;' if r.is_favorite else '&#9734;'  # Gold star for favorite, grey star otherwise
         table += f'''
-        <tr data-work-id="{work_id}">
-            <td>{r[1]}</td> <!-- Assuming title is now at index 1 -->
-            <td>{r[2]}</td>
-            <td>{r[3]}</td>
-            <td>{r[4]}</td>
+        <tr data-work-id="{r.id}">
+            <td>{r.title}</td> <!-- Assuming title is now at index 1 -->
+            <td>{r.author}</td>
+            <td>{r.rating}</td>
+            <td>{r.kudos}</td>
         '''
-        if is_favorite:
-            table += f'''<td><span class="favorite-toggle is-favorite" onclick="toggleFavoriteFromUI({work_id})">{favorite_icon}</td>'''
+        if r.is_favorite:
+            table += f'''<td><span class="favorite-toggle is-favorite" onclick="toggleFavoriteFromUI({r.id})">{favorite_icon}</td>'''
         else:
-           table += f'''<td><span class="favorite-toggle" onclick="toggleFavoriteFromUI({work_id})">{favorite_icon}</td>''' 
+           table += f'''<td><span class="favorite-toggle" onclick="toggleFavoriteFromUI({r.id})">{favorite_icon}</td>''' 
         
     table += "</tr></table>"
     return table
@@ -581,18 +579,30 @@ def get_search_results(search_term, search_type):
     """
     try:
         cursor.execute(query, (f'%{search_term}%',))
-        results = cursor.fetchall()
+        works = cursor.fetchall()
         conn.close()
-        return results
     except sqlite3.Error as e:
         print(f"Error executing SQL query: {e}")
         conn.close()
         return []
+    results = []
+    for w in works:
+        this_work = Work()
+        this_work.id = w[0]
+        this_work.title = w[1]
+        this_work.author = w[2]
+        this_work.rating = w[3]
+        this_work.kudos = w[4]
+        this_work.is_favorite = w[5]
+        results.append(this_work)
+
+    return results
+
 
 
 
 def search_database(search_type, search_term, rating=None, word_count=None):
-    conn = sqlite3.connect('works.db')  # Replace 'your_database.db' with the actual filename
+    conn = sqlite3.connect(DB_NAME) 
     c = conn.cursor()
 
     query = """

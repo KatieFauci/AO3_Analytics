@@ -4,33 +4,8 @@ import eel
 import tinydb
 import json
 import DB_Access
-
-class UserData:
-    def __init__(self):
-        self.story_count = 0
-        self.total_words = 0
-        self.tag_stats = {}
-        self.works = []
-        self.page_count = 0
-
-class Work:
-    def __init__(self):
-        self.title = ''
-        self.author = ''
-        self.rating = ''
-        self.date_published = ''
-        self.word_count = 0
-        self.tags = []
-        self.last_visited = ''
-        self.kudos = 0
-        self.hits = 0
-        self.language = ''
-        self.completed_chapters = 0
-        self.total_chapters = 0
-        self.completed = False
-        self.comments = 0
-        self.bookmarks = 0
-        self.fandoms = []
+from Models.Work import Work
+from Models.UserData import UserData
 
 
 
