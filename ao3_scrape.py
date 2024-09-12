@@ -75,7 +75,6 @@ def scrape(USERNAME, PASSWORD):
             page_num = page_num + 1
 
         # Get User Stats
-        ##this_user.tag_stats = utils.compile_user_tags(this_user)
         this_user.page_count = utils.get_page_count(this_user.total_words);
 
         utils.print_user_data(this_user)
@@ -85,8 +84,6 @@ def scrape(USERNAME, PASSWORD):
 
         with open("Scrape_Results/all_works.json", "w") as outfile:
             outfile.write(json_object)
-
-        utils.get_tag_stats_from_json()
 
     print("END")
 
