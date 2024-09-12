@@ -80,5 +80,5 @@ def toggle_favorite_ui(work_id):
     is_favorite = DB_Access.is_work_favorite(work_id)
     return {"is_favorite": is_favorite, "message": "Favorite toggled"}
 
-eel.start('main.html', size=(800, 800)) 
+eel.start('main.html', size=(1500, 800)) 
  # Start
