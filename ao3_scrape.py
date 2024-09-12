@@ -8,15 +8,20 @@ import DB_Access
 from Models.Work import Work
 from Models.UserData import UserData
 
+# FOR TESTING PURPOSES ONLY
+import test_env
+
 
 
 def scrape(USERNAME, PASSWORD):
 
-    USERNAME = "WrongfulRuffian"
-    PASSWORD = "Szi646Feis!5SWH"
+    # COMMENT OUT AFTER TESTING
+    USERNAME = test_env.USERNAME
+    PASSWORD = test_env.PASSWORD
 
     eel.printToOutput("USERNAME: " + USERNAME)
     eel.printToOutput("PASSWORD: " + PASSWORD)
+    
     page_num = 1
     this_user = UserData()
     response_pages = scrape_utils.get_history(USERNAME, PASSWORD)
