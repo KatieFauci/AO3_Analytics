@@ -10,7 +10,6 @@ Lib
 /Database_Testing
 works.db
 scrape_test.py
-additional_stats_test.py
 test.py
 notes.txt
 test_env.py
