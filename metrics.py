@@ -183,6 +183,7 @@ def calculate_user_stats():
     try:
         c.execute(SUM_WORD_COUNT)
         words_read = c.fetchone()[0] if result else 0
+        print(f'words read from db: {words_read}')
     finally:
         conn.close()
 

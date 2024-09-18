@@ -1,4 +1,5 @@
 import sqlite3
+import eel
 from sql_statements import *
 from env import DB_NAME
 # Define global SQL strings
@@ -50,46 +51,58 @@ def add_author(author_name):
     else:
         return author_id[0]
     
+    conn.commit()
     conn.close()
 
 def add_work(data, author_id):
-    conn = create_connection()
-    c = conn.cursor()
+    try:
+        conn = create_connection()
+        c = conn.cursor()
+        # Insert into works table
+        c.execute(SELECT_WORK_AUTHOR_TITLE_RATING, 
+                (data.title, author_id, data.rating))
+        work_id = c.fetchone()
+        
+        if work_id is None:
+            c.execute(INSERT_WORK,
+                    (data.title, author_id, data.rating, data.word_count, data.last_visited, data.date_published, data.language, data.completed_chapters, data.total_chapters, data.completed, data.comments, data.kudos, data.bookmarks, data.hits))
+            conn.commit() 
+            work_id = c.lastrowid
+        else:
+            work_id = work_id[0]
 
-    # Insert into works table
-    c.execute(SELECT_WORK_AUTHOR_TITLE_RATING, 
-              (data.title, author_id, data.rating))
-    work_id = c.fetchone()
+        conn.close()
 
-    if work_id is None:
-        c.execute(INSERT_WORK,
-                  (data.title, author_id, data.rating, data.word_count, data.last_visited, data.date_published, data.language, data.completed_chapters, data.total_chapters, data.completed, data.comments, data.kudos, data.bookmarks, data.hits))
-        work_id = c.lastrowid
         return work_id
-    conn.close()
-
-    return work_id[0]
+    except Exception as e:
+        eel.printToOutput(f'ERROR Adding Work >>>> ERROR: {e}')
 
 def add_work_tags(tags, work_id):
     conn = create_connection()
     c = conn.cursor()
     # Insert into tags table and story_tags table
-    for tag in tags:
-        c.execute(SELECT_TAG_WITH_CLASS, (tag['Tag'], tag['TagClass']))
-        tag_id = c.fetchone()
-        
-        if tag_id is None:
-            # Check if the tag is a ship
-            is_ship = 1 if tag['TagClass'] == 'relationships' and '/' in tag['Tag'] else 0
-            c.execute(INSERT_TAG, (tag['Tag'], tag['TagClass'], is_ship))
-            tag_id = c.lastrowid
-        else:
-            tag_id = tag_id[0]
+    try:
+        for tag in tags:
+            c.execute(SELECT_TAG_WITH_CLASS, (tag['Tag'], tag['TagClass']))
+            tag_id = c.fetchone()
 
-        c.execute(SELECT_WORK_TAG_RELATION, (work_id, tag_id))
-        if c.fetchone() is None:
-            c.execute(INSERT_WORK_TAG_RELATION, (work_id, tag_id))
-    conn.close()
+            if tag_id is None:
+                # Check if the tag is a ship
+                is_ship = 1 if tag['TagClass'] == 'relationships' and '/' in tag['Tag'] else 0
+                c.execute(INSERT_TAG, (tag['Tag'], tag['TagClass'], is_ship))
+                tag_id = c.lastrowid
+            else:
+                tag_id = tag_id[0]
+
+            c.execute(SELECT_WORK_TAG_RELATION, (work_id, tag_id))
+            relation = c.fetchone()
+            if relation is None:
+                c.execute(INSERT_WORK_TAG_RELATION, (work_id, tag_id))
+
+        conn.commit()    
+        conn.close()
+    except Exception as e:
+        eel.printToOutput(f'ERROR Adding Work Tags >>>> ERROR: {e}')
 
 def add_work_fandoms(fandoms, work_id):
     conn = create_connection()
@@ -108,6 +121,7 @@ def add_work_fandoms(fandoms, work_id):
         c.execute(SELECT_WORK_FANDOM_RELATION, (work_id, fandom_id))
         if c.fetchone() is None:
             c.execute(INSERT_WORK_FANDOM_RELATION, (work_id, fandom_id))
+    conn.commit()    
     conn.close()
 
 def insert_series(series_name, series_link, work_id):
@@ -132,11 +146,13 @@ def insert_series(series_name, series_link, work_id):
 
 
 def insert_work_into_database(data):
-    author_id = add_author(data.author)
-    work_id = add_work(data, author_id)
-    add_work_tags(data.tags, work_id)
-    add_work_fandoms(data.fandoms, work_id)
-    
+    try:
+        author_id = add_author(data.author)
+        work_id = add_work(data, author_id)
+        add_work_tags(data.tags, work_id)
+        add_work_fandoms(data.fandoms, work_id)
+    except Exception as e:
+        eel.printToOutput(f'ERROR Inserting Full Work Data >>>> ERROR: {e}')
     
 def toggle_favorite(work_id):
     conn = create_connection()

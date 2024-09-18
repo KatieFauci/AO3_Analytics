@@ -23,3 +23,7 @@ class Work:
         self.is_favorite = False
         self.is_rec = False
 
+
+    def print_data(self):
+        print(f'Title: {self.title} \nAuthor: {self.author}')
+

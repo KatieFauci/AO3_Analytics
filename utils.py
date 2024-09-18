@@ -37,7 +37,10 @@ def store_user_data(user):
 
 def get_page_count(word_count):
     print(f'word count is {word_count}')
-    return int(floor(word_count/300))
+    if word_count != None:
+        return int(floor(word_count/300))
+    else: 
+        print("ERROR >> Word Count Not Valid To Calculate Page Count")
 
 def build_work_results(works):
     results = []

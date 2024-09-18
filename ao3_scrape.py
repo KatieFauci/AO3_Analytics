@@ -46,7 +46,6 @@ def scrape(USERNAME, PASSWORD):
                 break
             
             eel.printToOutput('PARSING PAGE >> ' + str(page_num))
-            #print('PARSING PAGE >> ' + str(page_num))
 
             for work in soup.find_all('li', attrs={"role": "article"}):
                 try:
@@ -67,14 +66,11 @@ def scrape(USERNAME, PASSWORD):
                     this_work.bookmarks = scrape_utils.get_bookmarks(work)
                     this_work.hits = scrape_utils.get_hits(work)
                     this_work.fandoms = scrape_utils.get_fandoms(work)
-
                     # Add Work To Users Works
                     this_user.works.append(this_work)
-
                     # Inc Story Count
                     this_user.story_count = this_user.story_count + 1
                     DB_Access.insert_work_into_database(this_work)
-
                 except Exception as e:
                     eel.printToOutput(f'ERROR getting work on page {page_num} >>>> ERROR: {e}')
             
