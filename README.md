@@ -8,7 +8,7 @@ to run against history page `python ao3_scrape.py`
 
 
 ## TODO
-- [ ] Fix Dependencies file (convert to requirements.txt)
+- [X] Fix Dependencies file (convert to requirements.txt)
 - [X] Integrate a Database (no sql) - JSON Files
 - Handle specific errors when getting works
   - [X] hidden works
@@ -18,13 +18,13 @@ to run against history page `python ao3_scrape.py`
   - [X] Print CMD line output
   - [X] Create Result Tabs
   - [X] display results in Tabs
-  - [ ] Add new metrics to the UI
+  - [X] Add new metrics to the UI
 - Analyze tags to get
   - [X] get top 10 trope tag
   - [X] get top 10 relashionship tags
 - [ ] Display analytics in charts
 - [X] Add Wordcloud Generation
-- [ ] add recs page/favorites
+- [X] add recs page/favorites
 - [ ] pull the number of times visiting a story into data 
 - [X] Pull if part of collection or series/multiple series
 - [X] Handle bad login
