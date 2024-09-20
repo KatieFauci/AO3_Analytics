@@ -7,6 +7,7 @@
 
         <script type = "text/javascript" src = "/eel.js"></script>
         <script src = "/script.js"></script>
+
    </head>
 
    <body id = "Main" onload = "openTab(event, 'Scrape','Main')">
@@ -19,6 +20,7 @@
          <button class = "tablinks" onclick = "openTab(event, 'Search','Main')">Search</button>
          <button class = "tablinks" onclick = "openTab(event, 'Recently Visited','Main');fillRecentlyVisitedTable()">Recently Visited</button>
          <button class = "tablinks" onclick = "openTab(event, 'My Favorites','Main');fillFavoritesTable()">My Favorites</button>
+         <button class = "tablinks" onclick = "openTab(event, 'Binding','Main');activateDefaultTab('default_bind_tab')">Binding</button>
       </div>
 
     <!-- Tab content --> 
@@ -43,7 +45,7 @@
          <table id="stats-table"></table>
       </div>
  
-      <div id = "Tags" class = "tabcontent" onload = "openTab(event,'Characters','Tags', 'defaultTagTab')">
+      <div id = "Tags" class = "tabcontent">
          <!-- Tag Tab Links --> 
          <div class = "tab"> 
             <button class = "tablinks" id = "default_tag_tab" onclick = "fillTagsTable('characters-table','characters');openTab(event,'Characters','Tags')">Characters</button> 
@@ -132,6 +134,37 @@
       <!-- Favorites Tab Content -->  
       <div id = "My Favorites" class = "tabcontent"> 
          <table id = "favorites-table"></table>
+      </div>
+
+      <div id = "Binding" class = "tabcontent">
+         <!-- Tag Tab Links --> 
+         <div class = "tab"> 
+            <button class = "tablinks" id = "default_bind_tab" onclick = "fillToBindTable();openTab(event,'bind-list','Binding')">Bind List</button> 
+            <button class = "tablinks" onclick = "fillBoundTable();openTab(event, 'bound-list','Binding')">Bound List</button>
+            <button class = "tablinks" onclick = "openTab(event, 'size-estimate','Binding')">Size Estimator</button>
+         </div>
+
+         <div id = "bind-list" class = "tabcontent"> 
+            <table id = "bind-list-table"></table>
+         </div>
+         <div id = "bound-list" class = "tabcontent">
+            <table id = "bound-list-table"></table>
+         </div>
+         <div id = "size-estimate" class = "tabcontent">
+            <h1>Bind Size Estimator</h1>
+            <input type="radio" id="calc-based-word-count" name="bind-calc-value" value="word-count">
+            <label for="calc-based-word-count">Word Count</label>
+            <input type="radio" id="calc-based-page-num" name="bind-calc-value" value="page-num">
+            <label for="calc-based-page-num">Number of Pages</label>
+            <input type="number" id="input-num" name="input=num" min="0" step="1">
+            </hr>
+            <form id="pdf_upload">
+               <h2>Upload New File</h2>
+               <input type="file" id="pdf-upload" name="uploaded-pdf">
+               </br>
+               <input type="button" value="Calculate Data Point" onclick="uploadPdf()">
+            </form>
+         </div>
       </div>
 
    </body>

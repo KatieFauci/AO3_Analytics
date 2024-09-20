@@ -151,6 +151,29 @@ async function toggleFavoriteFromUI(workId) {
   });
 }
 
+
+async function uploadPdf() {
+  console.log("in upload PDF")
+  const fileInput = document.getElementById('pdf-upload');
+  const file = fileInput.files[0];
+
+  if(file) {
+    console.log("in file")
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      console.log("in reader onload")
+      const fileData = event.target.result;
+      // Send the file to python
+      eel.receive_file(file.name, fileData)(function(response) {
+        console.log(response);
+      });
+    };
+    reader.readAsDataURL(file);
+  } else {
+    alert("Please Select A File First")
+  }
+}
+
 //--------------------------------------------------
 //
 //  Table Construction
@@ -210,6 +233,19 @@ async function fillRecentlyVisitedTable() {
 async function fillFavoritesTable() {
   const table = await eel.fill_favorites_table()();
   document.getElementById("favorites-table").innerHTML = table;
+  attachBindStatusListeners();
+}
+
+async function fillToBindTable() {
+  const table = await eel.fill_to_bind_table()();
+  document.getElementById("bind-list-table").innerHTML = table;
+  attachBindStatusListeners();
+}
+
+async function fillBoundTable() {
+  const table = await eel.fill_bound_table()();
+  document.getElementById("bound-list-table").innerHTML = table;
+  attachBindStatusListeners();
 }
 
 async function displayWordcloud(data_set) {
@@ -224,6 +260,20 @@ async function displayWordcloud(data_set) {
   }
 }
 
+
+  // Function to attach listeners to the dynamically added select elements
+async function attachBindStatusListeners() {
+  const bindStatusSelects = document.querySelectorAll('.bind-status');
+
+  bindStatusSelects.forEach(function(select) {
+    select.addEventListener('change', async function() {
+        const selectedValue = this.value;
+        const workId = this.closest('tr').getAttribute('data-work-id');
+        console.log(`Work ID: ${workId}, Selected Bind Status: ${selectedValue}`);
+        await eel.update_bind_status(selectedValue, workId)();
+      });
+  });
+}
 
 
 

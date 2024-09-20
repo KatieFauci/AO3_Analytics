@@ -5,6 +5,7 @@ import json
 from Models.Work import Work
 from Models.Tag import Tag
 import metrics
+from env import *
 
 
 
@@ -44,7 +45,7 @@ def get_page_count(word_count):
 
 def build_work_results(works):
     results = []
-    for work_id, title, author, rating, kudos, is_favorite, word_count in works:
+    for work_id, title, author, rating, kudos, is_favorite, word_count, bind_status in works:
         this_work = Work()
         this_work.id = work_id
         this_work.title = title
@@ -53,6 +54,7 @@ def build_work_results(works):
         this_work.kudos = kudos
         this_work.is_favorite = is_favorite
         this_work.word_count = word_count
+        this_work.bind_status = bind_status
         results.append(this_work)
 
     return results
@@ -109,6 +111,7 @@ def build_table_of_works(results):
             <th>Word Count</th>
             <th>Kudos</th>
             <th>Favorite</th>
+            <th>Bind Status</th>
         </tr>
     '''
     for r in results:  
@@ -126,6 +129,19 @@ def build_table_of_works(results):
         else:
            table += f'''<td><span class="favorite-toggle" onclick="toggleFavoriteFromUI({r.id})">{favorite_icon}</td>''' 
         
+        table += '''<td><select class="bind-status" name="bind-status>'''
+
+        if r.bind_status == None:
+            table += f'''<option value="" selected></option>'''
+            
+        for status in BIND_STATUSES:
+            if r.bind_status == status:
+                table += f'''<option value="{status}" selected>{status}</option>'''
+            else:
+                table += f'''<option value="{status}">{status}</option>'''
+
+        table += '</select></td>'
+
     table += "</tr></table>"
     return table
 

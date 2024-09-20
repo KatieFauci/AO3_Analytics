@@ -4,9 +4,10 @@ import matplotlib.pyplot as plt
 from Models.Work import Work
 from Models.Tag import Tag
 from Models.UserData import UserData
-from DB_Access import create_connection
+from DB_Access import create_connection, get_relashionships, get_all_ships
 import utils
 from sql_statements import *
+
 
 
 
@@ -24,88 +25,6 @@ def get_work_count():
     conn.close()
     return int(work_count[0][0])
 
-
-def get_tags(tag_class=None):
-    conn = create_connection()  # Replace with your database file
-    c = conn.cursor()
-    print(f'GETTING <{tag_class}> TAGS')
-
-    try:
-        if tag_class:
-            c.execute("""
-                  SELECT tags.tag, COUNT(work_tags.work_id) as count
-                  FROM tags
-                  JOIN work_tags ON tags.id = work_tags.tag_id
-                  WHERE tags.tag_class = ?
-                  GROUP BY tags.tag
-                  ORDER BY count DESC;
-                  """, (tag_class,))
-        else:
-            c.execute("""
-                  SELECT tags.tag, COUNT(work_tags.work_id) as count
-                  FROM tags
-                  JOIN work_tags ON tags.id = work_tags.tag_id
-                  GROUP BY tags.tag
-                  ORDER BY count DESC;
-                  """)
-
-        tags = c.fetchall()
-        return utils.build_tag_results(tags)
-
-    finally:
-        conn.close()
-
-
-def get_relashionships(exclude_ships=False):
-    conn = create_connection()
-    c = conn.cursor()
-    print(f'GETTING <relationships> TAGS')
-
-    try:
-        if exclude_ships:
-            c.execute("""
-                  SELECT tags.tag, COUNT(work_tags.work_id) as count
-                  FROM tags
-                  JOIN work_tags ON tags.id = work_tags.tag_id
-                  WHERE tags.tag_class = "relationships"
-                  AND tags.is_ship = 0
-                  GROUP BY tags.tag
-                  ORDER BY count DESC;
-                  """)
-        else:
-            c.execute("""
-                  SELECT tags.tag, COUNT(work_tags.work_id) as count
-                  FROM tags
-                  JOIN work_tags ON tags.id = work_tags.tag_id
-                  WHERE tags.tag_class = "relationships"
-                  GROUP BY tags.tag
-                  ORDER BY count DESC;
-                  """)
-            
-        tags = c.fetchall()
-    finally:
-        conn.close()
-
-    return utils.build_tag_results(tags)
-
-def get_all_ships():
-    conn = create_connection()
-    c = conn.cursor()
-
-    try:
-        c.execute('''
-            SELECT t.tag, COUNT(wt.tag_id) AS count
-            FROM tags AS t
-            JOIN work_tags AS wt ON t.id = wt.tag_id
-            WHERE t.is_ship = 1
-            GROUP BY t.tag
-            ORDER BY count DESC
-        ''')
-        tags = c.fetchall()
-    finally:
-       conn.close()
-
-    return utils.build_tag_results(tags)
 
 def get_author_tags(author, tag_class=None):
     conn = create_connection()
@@ -139,42 +58,6 @@ def get_author_tags(author, tag_class=None):
     conn.close()
     return author_tags
 
-def get_recently_visited_works():
-    conn = create_connection()
-    c = conn.cursor()
-
-    query = f'''
-    SELECT {WORK_VALUES}
-    FROM works AS w
-    JOIN authors AS a ON w.author_id = a.id
-    ORDER BY w.last_visited DESC
-    LIMIT 5
-    '''
-    try:
-        c.execute(query)
-        works = c.fetchall()
-    finally:
-        conn.close()
-
-    return utils.build_work_results(works)
-
-def get_favorites():
-    conn = create_connection()
-    c = conn.cursor()
-
-    query = f'''
-    SELECT {WORK_VALUES}
-    FROM works AS w
-    JOIN authors AS a ON w.author_id = a.id
-    WHERE w.is_favorite = true
-    '''
-    try:
-        c.execute(query)
-        works = c.fetchall()
-    finally:
-        conn.close()
-
-    return utils.build_work_results(works)
 
 def calculate_user_stats():
     conn = create_connection()

@@ -33,7 +33,7 @@ to run against history page `python ao3_scrape.py`
 - [ ] Add fandom to works table
 - [X] Add wordcloud
 - Bookbinding Resources
-  - [ ] Keep track of a to-bind list
-  - [ ] Keep track of which works have been bound
-  - [ ] Utility to store typest metrics based on pdf
+  - [X] Keep track of a to-bind list
+  - [X] Keep track of which works have been bound
+  - [X] Utility to store typest metrics based on pdf
   - [ ] Utility to estimate size of spine

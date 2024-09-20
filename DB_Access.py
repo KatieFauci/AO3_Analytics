@@ -181,3 +181,99 @@ def get_favorites():
     favorites = c.fetchall()
     conn.close()
     return favorites
+
+def set_bind_status(bind_status, work_id):
+    conn = create_connection()
+    c = conn.cursor()
+    
+    c.execute(UPDATE_BIND_STATUS, (bind_status, work_id))
+    conn.commit()
+    conn.close()
+
+def get_to_bind_list():
+    conn = create_connection()
+    c = conn.cursor()
+
+    c.execute(SELECT_TO_BIND_LIST)
+    to_bind_list = c.fetchall()
+    conn.close()
+    return to_bind_list
+
+def get_bound_list():
+    conn = create_connection()
+    c = conn.cursor()
+
+    c.execute(SELECT_BOUND_LIST)
+    to_bind_list = c.fetchall()
+    conn.close()
+    return to_bind_list
+
+
+def get_recently_visited_works():
+    conn = create_connection()
+    c = conn.cursor()
+
+    try:
+        c.execute(SELECT_RECENTLY_VISITED)
+        works = c.fetchall()
+        return works
+    finally:
+        conn.close()
+
+def get_favorites():
+    conn = create_connection()
+    c = conn.cursor()
+
+    try:
+        c.execute(SELECT_FAVORITES_LIST)
+        works = c.fetchall()
+        return works
+    finally:
+        conn.close()
+
+
+def get_all_ships():
+    conn = create_connection()
+    c = conn.cursor()
+
+    try:
+        c.execute(SELECT_ALL_SHIPS)
+        tags = c.fetchall()
+    finally:
+       conn.close()
+
+    return tags
+
+def get_relashionships(exclude_ships=False):
+    conn = create_connection()
+    c = conn.cursor()
+    print(f'GETTING <relationships> TAGS')
+
+    try:
+        if exclude_ships:
+            c.execute(SELECT_RELATIONSHIPS_EXCLUDE_SHIPS)
+        else:
+            c.execute(SELECT_RELATIONSHIPS)
+            
+        tags = c.fetchall()
+    finally:
+        conn.close()
+
+    return tags
+
+def get_tags(tag_class=None):
+    conn = create_connection()  # Replace with your database file
+    c = conn.cursor()
+    print(f'GETTING <{tag_class}> TAGS')
+
+    try:
+        if tag_class:
+            c.execute(SELECT_TAG_BY_CLASS, (tag_class,))
+        else:
+            c.execute(SELECT_ALL_TAGS)
+
+        tags = c.fetchall()
+        return tags
+
+    finally:
+        conn.close()

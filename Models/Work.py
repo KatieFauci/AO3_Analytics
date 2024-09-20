@@ -22,6 +22,7 @@ class Work:
         self.id = 0
         self.is_favorite = False
         self.is_rec = False
+        self.bind_status = ''
 
 
     def print_data(self):

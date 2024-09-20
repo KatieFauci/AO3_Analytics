@@ -19,6 +19,7 @@ CREATE_WORKS_TABLE = '''CREATE TABLE IF NOT EXISTS works (
                     collections_link TEXT,
                     rec BOOLEAN DEFAULT 0,
                     is_favorite BOOLEAN DEFAULT 0,
+                    bind_status TEXT,
                     FOREIGN KEY(author_id) REFERENCES authors(id)
 )'''
 CREATE_AUTHORS_TABLE = '''CREATE TABLE IF NOT EXISTS authors (id INTEGER PRIMARY KEY, author TEXT UNIQUE)'''
@@ -70,6 +71,20 @@ INITALIZE_RATINGS_TABLE = '''INSERT OR IGNORE INTO ratings (rating, rating_symbo
                     ('Not Rated', 'NR')
                 ;'''
 
+
+# Values to be collected from works for tables
+WORK_VALUES =  '''           
+                w.id, 
+                w.title, 
+                a.author, 
+                w.rating, 
+                w.kudos, 
+                w.is_favorite, 
+                w.word_count,
+                w.bind_status
+                '''
+
+
 # Inserting to tables
 INSERT_AUTHOR = "INSERT INTO authors (author) VALUES (?)"
 INSERT_WORK = "INSERT INTO works (title, author_id, rating, word_count, last_visited, date_published, lang, completed_chapters, total_chapters, completed, comments, kudos, bookmarks, hits) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -91,22 +106,23 @@ SELECT_SERIES_ID_BY_NAME = "SELECT series_id FROM series WHERE series_name = ?"
 SELECT_FAVORITES = "SELECT * FROM works WHERE is_favorite = 1"
 IS_FAVORITE = "SELECT is_favorite FROM works WHERE id = ?"
 SELECT_WORK_COUNT = "SELECT count(*) FROM works"
-SUM_WORD_COUNT = 'SELECT SUM(word_count) FROM works'
+SUM_WORD_COUNT = "SELECT SUM(word_count) FROM works"
+SELECT_RECENTLY_VISITED = f'''SELECT {WORK_VALUES} FROM works AS w JOIN authors AS a ON w.author_id = a.id ORDER BY w.last_visited DESC LIMIT 5'''
+SELECT_TO_BIND_LIST = f"SELECT {WORK_VALUES} FROM works AS w JOIN authors AS a ON w.author_id = a.id WHERE bind_status in ('To-Bind', 'In Progress')"
+SELECT_BOUND_LIST = f"SELECT {WORK_VALUES} FROM works AS w JOIN authors AS a ON w.author_id = a.id WHERE bind_status = 'Bound'"
+SELECT_FAVORITES_LIST = f'''SELECT {WORK_VALUES} FROM works AS w JOIN authors AS a ON w.author_id = a.id WHERE w.is_favorite = true'''
+SELECT_ALL_SHIPS = '''SELECT t.tag, COUNT(wt.tag_id) AS count FROM tags AS t JOIN work_tags AS wt ON t.id = wt.tag_id WHERE t.is_ship = 1 GROUP BY t.tag ORDER BY count DESC'''
+SELECT_RELATIONSHIPS_EXCLUDE_SHIPS = '''SELECT tags.tag, COUNT(work_tags.work_id) as count FROM tags JOIN work_tags ON tags.id = work_tags.tag_id WHERE tags.tag_class = "relationships" AND tags.is_ship = 0 GROUP BY tags.tag ORDER BY count DESC;'''
+SELECT_RELATIONSHIPS = '''SELECT tags.tag, COUNT(work_tags.work_id) as count FROM tags JOIN work_tags ON tags.id = work_tags.tag_id WHERE tags.tag_class = "relationships" GROUP BY tags.tag ORDER BY count DESC;'''
+SELECT_TAG_BY_CLASS = '''SELECT tags.tag, COUNT(work_tags.work_id) as count FROM tags JOIN work_tags ON tags.id = work_tags.tag_id WHERE tags.tag_class = ? GROUP BY tags.tag ORDER BY count DESC;'''
+SELECT_ALL_TAGS = '''SELECT tags.tag, COUNT(work_tags.work_id) as count FROM tags JOIN work_tags ON tags.id = work_tags.tag_id GROUP BY tags.tag ORDER BY count DESC;'''
 
 # Updates
 TOGGLE_FAVORITE = "UPDATE works SET is_favorite = NOT is_favorite WHERE id = ?"
+UPDATE_BIND_STATUS = "UPDATE works SET bind_status = ? WHERE id = ?"
 
 
-# Database Searche statements
-WORK_VALUES =  '''           
-                w.id, 
-                w.title, 
-                a.author, 
-                w.rating, 
-                w.kudos, 
-                w.is_favorite, 
-                w.word_count
-                '''
+
 
 SEARCH_BY_TAG = f"""
         SELECT
