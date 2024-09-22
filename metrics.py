@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from Models.Work import Work
 from Models.Tag import Tag
 from Models.UserData import UserData
-from DB_Access import create_connection, get_relashionships, get_all_ships
+from DB_Access import create_connection, get_relashionships, get_all_ships, get_tags
 import utils
 from sql_statements import *
 
@@ -80,13 +80,13 @@ def calculate_user_stats():
 def create_wordcloud(tag_set, exclude_ships):
 
     if tag_set == 'Characters':
-        data = {tag.tag: tag.count for tag in get_tags('characters')}
+        data = {tag.tag: tag.count for tag in utils.build_tag_results(get_tags('characters'))}
     elif tag_set == 'Freeform':
-        data = {tag.tag: tag.count for tag in get_tags('freeforms')}
+        data = {tag.tag: tag.count for tag in utils.build_tag_results(get_tags('freeforms'))}
     elif tag_set == 'Relationships':
-        data = {tag.tag: tag.count for tag in get_relashionships(exclude_ships)}
+        data = {tag.tag: tag.count for tag in utils.build_tag_results(get_relashionships(exclude_ships))}
     elif tag_set == 'Ships':
-        data = {tag.tag: tag.count for tag in get_all_ships()}
+        data = {tag.tag: tag.count for tag in utils.build_tag_results(get_all_ships())}
 
 
     wordcloud = WordCloud(width=1600, height=800, background_color='grey', min_font_size=10, max_font_size=200, colormap='Reds').generate_from_frequencies(data)
